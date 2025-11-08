@@ -1,0 +1,831 @@
+/* ============================================
+   PÁGINA DE INICIO - ESTILOS PRINCIPALES
+   ============================================
+   
+   Este archivo contiene todos los estilos para la
+   página de inicio de sesión (Login).
+   
+   Organización:
+   1. Variables CSS (colores, fuentes, etc.)
+   2. Estilos globales del contenedor
+   3. Estilos del formulario
+   4. Animaciones
+   5. Responsive (adaptación a móviles)
+   ============================================ */
+
+/* ============================================
+   1. VARIABLES CSS
+   ============================================ */
+
+:root {
+  /* Colores principales */
+  --color-primario: #d43371;
+  --color-secundario: #e1bde2;
+  --color-acento: #72c8e5;
+  --color-gradiente-inicio: rgba(114, 200, 229, 0.61);
+  --color-gradiente-fin: rgba(145, 69, 124, 0.79);
+  
+  /* Colores de estado */
+  --color-exito: #4caf50;
+  --color-error: #f44336;
+  --color-advertencia: #ff9800;
+  
+  /* Colores de texto */
+  --color-texto-principal: #1a1a1a;
+  --color-texto-secundario: #666666;
+  --color-texto-claro: #a69999;
+  
+  /* Colores de fondo */
+  --color-fondo-blanco: #ffffff;
+  --color-fondo-campo: #f8f8f8;
+  
+  /* Sombras */
+  --sombra-suave: 0 2px 10px rgba(0, 0, 0, 0.1);
+  --sombra-media: 0 4px 20px rgba(0, 0, 0, 0.15);
+  --sombra-fuerte: 0 8px 30px rgba(0, 0, 0, 0.2);
+  --sombra-color: 0 4px 20px rgba(212, 51, 113, 0.3);
+  
+  /* Espaciados */
+  --espaciado-pequeno: 0.5rem;
+  --espaciado-medio: 1rem;
+  --espaciado-grande: 2rem;
+  
+  /* Bordes */
+  --radio-borde: 12px;
+  --radio-borde-grande: 40px;
+  
+  /* Transiciones */
+  --transicion-rapida: 0.2s ease;
+  --transicion-media: 0.3s ease;
+  --transicion-suave: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   2. ESTILOS GLOBALES DEL CONTENEDOR
+   ============================================ */
+
+/* Contenedor principal de toda la página */
+.pagina-inicio {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: 'Poppins', 'Space Grotesk', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 2rem;
+}
+
+/* Fondo con gradiente animado */
+.fondo-gradiente {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    var(--color-gradiente-inicio) 0%,
+    var(--color-gradiente-fin) 100%
+  );
+  z-index: -1;
+  animation: gradienteAnimado 15s ease infinite;
+  background-size: 200% 200%;
+}
+
+/* Contenedor principal que centra el formulario */
+.contenedor-principal {
+  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================
+   3. PANEL DEL FORMULARIO
+   ============================================ */
+
+/* Panel principal blanco que contiene todo */
+.panel-formulario {
+  position: relative;
+  width: 1256px;
+  height: 825px;
+  max-width: 95%;
+  background: var(--color-fondo-blanco);
+  border-radius: var(--radio-borde-grande);
+  box-shadow: var(--sombra-fuerte);
+  display: flex;
+  overflow: visible;
+  transition: transform var(--transicion-suave);
+}
+
+.panel-formulario:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+/* Panel lateral morado decorativo */
+.panel-lateral {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 449px;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    var(--color-secundario) 0%,
+    rgba(225, 189, 226, 0.9) 100%
+  );
+  border-radius: 0 var(--radio-borde-grande) var(--radio-borde-grande) 0;
+  z-index: 1;
+}
+
+/* ============================================
+   4. LOGOS DECORATIVOS
+   ============================================ */
+
+/* Estilos base para todos los logos */
+.logo {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.1));
+  transition: transform var(--transicion-suave);
+  object-fit: contain;
+}
+
+/* Logo pequeño SEMPITERNO - Superior derecha del panel morado */
+.logo-pequeno {
+  height: 140px;
+  width: auto;
+  right: 60px;
+  top: 60px;
+  opacity: 1;
+  z-index: 3;
+}
+
+/* Logo mediano (Personaje sentado) - Centro del panel morado */
+.logo-medio {
+  height: 540px;
+  width: auto;
+  right: 140px;
+  top: 50%;
+  transform: translateY(-30%);
+  opacity: 1;
+  z-index: 2;
+}
+
+/* Logo grande (Cactus) - Inferior derecha del panel morado */
+.logo-grande {
+  height: 430px;
+  width: auto;
+  right: 70px;
+  bottom: 60px;
+  opacity: 1;
+  z-index: 2;
+}
+
+/* Efecto hover en los logos - mantiene la posición vertical */
+.logo-pequeno:hover {
+  transform: scale(1.05);
+}
+
+.logo-medio:hover {
+  transform: translateY(-50%) scale(1.02);
+}
+
+.logo-grande:hover {
+  transform: scale(1.05);
+}
+
+/* ============================================
+   5. CONTENEDOR DEL FORMULARIO
+   ============================================ */
+
+/* Contenedor que envuelve el formulario de login */
+.contenedor-formulario {
+  position: relative;
+  z-index: 3;
+  width: calc(100% - 449px);
+  max-width: 550px;
+  padding: 60px 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 50px;
+}
+
+/* ============================================
+   6. ENCABEZADO DEL LOGIN
+   ============================================ */
+
+/* Contenedor del encabezado (título y subtítulo) */
+.encabezado-login {
+  margin-bottom: 2rem;
+  animation: fadeInDown 0.6s ease;
+}
+
+/* Título principal "Log In" */
+.titulo-login {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.25rem;
+  font-weight: 600;
+  color: var(--color-primario);
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.5px;
+}
+
+/* Subtítulo de bienvenida */
+.subtitulo-login {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1rem;
+  color: var(--color-texto-secundario);
+  margin: 0;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* ============================================
+   7. FORMULARIO
+   ============================================ */
+
+/* Estilos del formulario */
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  animation: fadeInUp 0.6s ease 0.2s backwards;
+}
+
+/* ============================================
+   8. CAMPOS DE ENTRADA
+   ============================================ */
+
+/* Grupo que contiene cada campo (label + input) */
+.campo-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+}
+
+/* Etiqueta del campo */
+.campo-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--color-texto-principal);
+  margin-bottom: 0.3rem;
+  transition: color var(--transicion-rapida);
+}
+
+/* Wrapper que contiene el input y sus iconos */
+.campo-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--color-texto-claro);
+  border-radius: 0;
+  padding: 0.75rem 0;
+  transition: all var(--transicion-media);
+}
+
+/* Estado activo (cuando el campo tiene foco) */
+.campo-wrapper.activo {
+  background: transparent;
+  border-bottom-color: var(--color-primario);
+  box-shadow: none;
+}
+
+/* Estado de error */
+.campo-wrapper.error {
+  border-bottom-color: var(--color-error);
+  background: transparent;
+}
+
+/* Estado válido */
+.campo-wrapper.valido {
+  border-bottom-color: var(--color-exito);
+  background: transparent;
+}
+
+/* Input del campo */
+.campo-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1rem;
+  color: var(--color-texto-principal);
+  outline: none;
+  padding-right: 2.5rem;
+  padding-left: 0;
+}
+
+.campo-input::placeholder {
+  color: var(--color-texto-claro);
+  font-size: 0.95rem;
+  transition: color var(--transicion-rapida);
+}
+
+.campo-input:focus::placeholder {
+  color: #d0d0d0;
+}
+
+/* Icono de validación (✓ o ✗) */
+.icono-validacion {
+  position: absolute;
+  right: 1rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  transition: transform var(--transicion-rapida);
+}
+
+.campo-wrapper.valido .icono-validacion {
+  color: var(--color-exito);
+  animation: bounceIn 0.4s ease;
+}
+
+.campo-wrapper.error .icono-validacion {
+  color: var(--color-error);
+  animation: shake 0.4s ease;
+}
+
+/* Mensaje de error debajo del campo */
+.mensaje-error {
+  font-size: 0.85rem;
+  color: var(--color-error);
+  margin: 0.3rem 0 0 0;
+  animation: fadeInDown 0.3s ease;
+}
+
+/* ============================================
+   9. BOTÓN MOSTRAR/OCULTAR CONTRASEÑA
+   ============================================ */
+
+.boton-toggle-password {
+  position: absolute;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: var(--color-texto-claro);
+  cursor: pointer;
+  padding: 0.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transicion-rapida);
+  border-radius: 6px;
+}
+
+.boton-toggle-password:hover {
+  color: var(--color-primario);
+  background: rgba(212, 51, 113, 0.1);
+  transform: scale(1.1);
+}
+
+.boton-toggle-password:active {
+  transform: scale(0.95);
+}
+
+/* ============================================
+   10. SECCIÓN DE OPCIONES (Términos y Recuperar)
+   ============================================ */
+
+.seccion-opciones {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+/* Contenedor del checkbox */
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+}
+
+/* Checkbox personalizado */
+.checkbox-input {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--color-primario);
+  transition: transform var(--transicion-rapida);
+  flex-shrink: 0;
+}
+
+.checkbox-input:hover {
+  transform: scale(1.1);
+}
+
+/* Label del checkbox */
+.checkbox-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.9rem;
+  color: var(--color-texto-secundario);
+  cursor: pointer;
+  user-select: none;
+  transition: color var(--transicion-rapida);
+  line-height: 1.4;
+}
+
+.checkbox-container:hover .checkbox-label {
+  color: var(--color-texto-principal);
+}
+
+/* Link de recuperar contraseña */
+.link-recuperar {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.9rem;
+  color: var(--color-primario);
+  text-decoration: underline;
+  font-weight: 400;
+  transition: all var(--transicion-rapida);
+  align-self: flex-start;
+  position: relative;
+  padding-bottom: 2px;
+}
+
+.link-recuperar:hover {
+  color: #b02958;
+  text-decoration: underline;
+}
+
+/* ============================================
+   11. BOTÓN DE LOGIN
+   ============================================ */
+
+.boton-login {
+  width: 100%;
+  max-width: 430px;
+  padding: 1rem 2rem;
+  background: linear-gradient(
+    135deg,
+    var(--color-primario) 0%,
+    #b02958 100%
+  );
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espaciado-pequeno);
+  box-shadow: 0 4px 15px rgba(212, 51, 113, 0.25);
+  transition: all var(--transicion-media);
+  position: relative;
+  overflow: hidden;
+  margin-top: 1.2rem;
+}
+
+/* Efecto de brillo en el botón */
+.boton-login::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.boton-login:hover::before {
+  left: 100%;
+}
+
+.boton-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 51, 113, 0.4);
+}
+
+.boton-login:active {
+  transform: translateY(0);
+}
+
+/* Botón deshabilitado */
+.boton-login:disabled {
+  background: linear-gradient(135deg, #ccc 0%, #999 100%);
+  cursor: not-allowed;
+  box-shadow: none;
+  opacity: 0.6;
+}
+
+.boton-login:disabled:hover {
+  transform: none;
+}
+
+/* Icono de flecha en el botón */
+.boton-icono {
+  font-size: 1.3rem;
+  transition: transform var(--transicion-media);
+}
+
+.boton-login:hover .boton-icono {
+  transform: translateX(3px);
+}
+
+/* ============================================
+   12. SECCIÓN DE REGISTRO
+   ============================================ */
+
+.seccion-registro {
+  text-align: center;
+  padding-top: 1.5rem;
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Texto de "¿No tienes cuenta?" */
+.texto-registro {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.95rem;
+  color: var(--color-texto-secundario);
+  margin: 0;
+}
+
+/* Link de contacto con administrador */
+.link-contacto {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.95rem;
+  color: var(--color-primario);
+  text-decoration: underline;
+  font-weight: 400;
+  transition: all var(--transicion-rapida);
+  display: inline-block;
+  position: relative;
+}
+
+.link-contacto:hover {
+  color: #b02958;
+  text-decoration: underline;
+}
+
+/* ============================================
+   13. ANIMACIONES
+   ============================================ */
+
+/* Animación de entrada desde arriba */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animación de entrada desde abajo */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animación de rebote */
+@keyframes bounceIn {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Animación de sacudida (error) */
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+/* Animación del gradiente de fondo */
+@keyframes gradienteAnimado {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Animación de flotación para logos */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+/* Animación de flotación para logo mediano (mantiene centrado) */
+@keyframes floatCentered {
+  0%, 100% {
+    transform: translateY(-50%);
+  }
+  50% {
+    transform: translateY(calc(-50% - 15px));
+  }
+}
+
+/* Flotación con retraso */
+.animate-float {
+  animation: float 5s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: floatCentered 6s ease-in-out infinite;
+}
+
+/* Pulso suave para el logo pequeño */
+@keyframes pulseSlow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.03);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulseSlow 3s ease-in-out infinite;
+}
+
+/* ============================================
+   14. RESPONSIVE (Adaptación a móviles)
+   ============================================ */
+
+/* Tablets (menor a 1024px) */
+@media (max-width: 1024px) {
+  .panel-formulario {
+    min-height: 700px;
+  }
+
+  .contenedor-formulario {
+    width: 65%;
+    padding: 60px 40px;
+  }
+
+  .logo-grande {
+    height: 400px;
+  }
+
+  .logo-medio {
+    height: 400px;
+  }
+
+  .logo-pequeno {
+    height: 150px;
+  }
+}
+
+/* Tablets pequeños (menor a 768px) */
+@media (max-width: 768px) {
+  .panel-formulario {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  .panel-lateral {
+    width: 100%;
+    height: 200px;
+    position: relative;
+    order: -1;
+  }
+
+  .contenedor-formulario {
+    width: 100%;
+    padding: 40px 30px;
+  }
+
+  .titulo-login {
+    font-size: 2.5rem;
+  }
+
+  .subtitulo-login {
+    font-size: 1.1rem;
+  }
+
+  /* Ocultar logos en móvil para mejor UX */
+  .logo-grande,
+  .logo-medio {
+    display: none;
+  }
+
+  .logo-pequeno {
+    height: 120px;
+    right: 50%;
+    transform: translateX(50%);
+    top: 40px;
+  }
+}
+
+/* Móviles (menor a 480px) */
+@media (max-width: 480px) {
+  .contenedor-principal {
+    padding: var(--espaciado-medio);
+  }
+
+  .contenedor-formulario {
+    padding: 30px 20px;
+  }
+
+  .titulo-login {
+    font-size: 2rem;
+  }
+
+  .subtitulo-login {
+    font-size: 1rem;
+  }
+
+  .boton-login {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  .campo-input {
+    font-size: 0.95rem;
+  }
+
+  .panel-lateral {
+    height: 150px;
+  }
+
+  .logo-pequeno {
+    height: 100px;
+  }
+}
+
+/* Modo oscuro (opcional - si el navegador lo prefiere) */
+@media (prefers-color-scheme: dark) {
+  /* Puedes descomentar esto si quieres soporte para modo oscuro */
+  /*
+  .panel-formulario {
+    background: #1a1a1a;
+  }
+  
+  .titulo-login,
+  .campo-label {
+    color: #ffffff;
+  }
+  
+  .subtitulo-login,
+  .texto-registro {
+    color: #cccccc;
+  }
+  
+  .campo-wrapper {
+    background: #2a2a2a;
+  }
+  
+  .campo-input {
+    color: #ffffff;
+  }
+  */
+}

@@ -1,0 +1,69 @@
+/* ============================================
+   ESTILOS GLOBALES DE LA APLICACIÓN
+   ============================================ */
+
+/* Reset de estilos base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Configuración de la raíz */
+:root {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Estilos del body */
+body {
+  margin: 0;
+  padding: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Contenedor principal de la aplicación */
+#root {
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Enlaces */
+a {
+  font-weight: 500;
+  text-decoration: inherit;
+  cursor: pointer;
+}
+
+/* Botones base */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:focus,
+button:focus-visible {
+  outline: 2px solid rgba(212, 51, 113, 0.5);
+  outline-offset: 2px;
+}
+
+/* Inputs base */
+input {
+  font-family: inherit;
+}
+
+input:focus {
+  outline: none;
+}
