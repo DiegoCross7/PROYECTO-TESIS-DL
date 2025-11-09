@@ -1,0 +1,220 @@
+/* ============================================
+   INICIO - ESTILOS DE LA PÁGINA
+   ============================================ */
+
+.inicio-container {
+  padding: 0;
+}
+
+.inicio-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.btn-grid-view {
+  padding: 0.625rem;
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-grid-view svg {
+  width: 20px;
+  height: 20px;
+  color: #6B7280;
+}
+
+.btn-grid-view:hover {
+  background: #F9FAFB;
+  border-color: #d43371;
+}
+
+.btn-grid-view:hover svg {
+  color: #d43371;
+}
+
+/* Grid de tarjetas */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Tarjetas */
+.dashboard-card {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.dashboard-card:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.btn-semana {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #6B7280;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-semana svg {
+  width: 16px;
+  height: 16px;
+}
+
+.btn-semana:hover {
+  background: white;
+  border-color: #d43371;
+  color: #d43371;
+}
+
+/* Charts */
+.tareas-chart,
+.registro-chart {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.donut-chart {
+  width: 200px;
+  height: 200px;
+}
+
+.chart-legend {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.legend-label {
+  flex: 1;
+  font-size: 0.9rem;
+  color: #6B7280;
+}
+
+.legend-value {
+  font-weight: 600;
+  color: #111827;
+  font-size: 0.9rem;
+}
+
+/* Rendimiento */
+.rendimiento-card {
+  grid-column: 1 / -1;
+}
+
+.rendimiento-chart {
+  margin-top: 1rem;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.chart-legend-horizontal {
+  display: flex;
+  gap: 2rem;
+}
+
+.chart-legend-horizontal .legend-item {
+  gap: 0.5rem;
+}
+
+.chart-stats {
+  display: flex;
+  gap: 2rem;
+}
+
+.stat-item {
+  text-align: right;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #6B7280;
+}
+
+.line-chart {
+  width: 100%;
+  height: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tareas-chart,
+  .registro-chart {
+    flex-direction: column;
+  }
+
+  .donut-chart {
+    width: 150px;
+    height: 150px;
+  }
+
+  .chart-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
