@@ -13,6 +13,7 @@ interface PerfilModalProps {
   usuario: Usuario;
   onClose: () => void;
   onOpenChatbot: () => void;
+  onCerrarSesion: () => void;
 }
 
 /**
@@ -26,13 +27,13 @@ interface PerfilModalProps {
  * - Botón para abrir chatbot
  * - Botón de cerrar sesión
  */
-export default function PerfilModal({ usuario, onClose, onOpenChatbot }: PerfilModalProps) {
+export default function PerfilModal({ usuario, onClose, onOpenChatbot, onCerrarSesion }: PerfilModalProps) {
   
   const handleCerrarSesion = () => {
     // TODO: Implementar lógica de cierre de sesión con backend
     // Ejemplo: await fetch('/api/auth/logout', { method: 'POST' })
-    alert('Función de cerrar sesión (TODO: Conectar con backend)');
     onClose();
+    onCerrarSesion();
   };
 
   const handleChatbot = () => {

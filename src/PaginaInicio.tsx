@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import './PaginaInicio.css';
 
+interface PaginaInicioProps {
+  onLogin: () => void;
+}
+
 /**
  * Componente: PaginaInicio
  * 
@@ -13,7 +17,7 @@ import './PaginaInicio.css';
  * - Diseño responsive (adaptable a diferentes pantallas)
  * - Gradiente de fondo personalizado
  */
-export default function PaginaInicio() {
+export default function PaginaInicio({ onLogin }: PaginaInicioProps) {
   // ============================================
   // ESTADOS DEL COMPONENTE
   // ============================================
@@ -66,9 +70,11 @@ export default function PaginaInicio() {
       return;
     }
 
-    // TODO: Aquí se conectará con el backend
+    // TODO: Aquí se conectará con el backend para validar credenciales
     console.log('Iniciando sesión con:', { correo, password });
-    alert('Funcionalidad de login próximamente (Backend)');
+    
+    // Llamar a la función onLogin para cambiar al Dashboard
+    onLogin();
   };
 
   /**

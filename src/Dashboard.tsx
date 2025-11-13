@@ -15,6 +15,10 @@ import Usuarios from './pages/Usuarios.tsx';
 import Proyectos from './pages/Proyectos.tsx';
 import Configuraciones from './pages/Configuraciones.tsx';
 
+interface DashboardProps {
+  onCerrarSesion: () => void;
+}
+
 /**
  * Componente: Dashboard
  * 
@@ -37,7 +41,7 @@ import Configuraciones from './pages/Configuraciones.tsx';
  * - Componentes reutilizables y testeables
  * - Fácil agregar nuevas páginas sin modificar código existente
  */
-export default function Dashboard() {
+export default function Dashboard({ onCerrarSesion }: DashboardProps) {
   // ============================================
   // ESTADOS DEL COMPONENTE
   // ============================================
@@ -102,6 +106,7 @@ export default function Dashboard() {
           usuario={usuario} 
           onClose={cerrarPerfil}
           onOpenChatbot={toggleChatbot}
+          onCerrarSesion={onCerrarSesion}
         />
       )}
 

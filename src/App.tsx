@@ -1,19 +1,42 @@
-// Importamos el componente del Dashboard
+import { useState } from 'react'
 import Dashboard from './Dashboard'
-// import PaginaInicio from './PaginaInicio' // Login page (comentado por ahora)
+import PaginaInicio from './PaginaInicio'
 
 /**
  * Componente principal de la aplicación
- * Aquí se renderiza el Dashboard principal
  * 
- * TODO: Implementar sistema de rutas
- * - Si no hay sesión activa → mostrar PaginaInicio (Login)
- * - Si hay sesión activa → mostrar Dashboard
+ * Flujo:
+ * 1. Inicia mostrando el Login (PaginaInicio)
+ * 2. Al hacer login exitoso → muestra el Dashboard
+ * 3. Al cerrar sesión → vuelve al Login
  */
 function App() {
+  // Estado para controlar si el usuario está logueado
+  const [estaLogueado, setEstaLogueado] = useState(false);
+
+  /**
+   * Función: manejarLogin
+   * Se ejecuta cuando el usuario hace login exitoso
+   */
+  const manejarLogin = () => {
+    setEstaLogueado(true);
+  };
+
+  /**
+   * Función: manejarCerrarSesion
+   * Se ejecuta cuando el usuario cierra sesión
+   */
+  const manejarCerrarSesion = () => {
+    setEstaLogueado(false);
+  };
+
   return (
     <>
-      <Dashboard />
+      {/* Si NO está logueado → mostrar Login */}
+      {!estaLogueado && <PaginaInicio onLogin={manejarLogin} />}
+      
+      {/* Si está logueado → mostrar Dashboard */}
+      {estaLogueado && <Dashboard onCerrarSesion={manejarCerrarSesion} />}
     </>
   )
 }
