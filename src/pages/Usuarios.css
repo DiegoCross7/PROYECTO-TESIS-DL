@@ -289,6 +289,18 @@
   color: #374151;
 }
 
+/* Rol del usuario */
+.usuario-rol {
+  display: inline-block;
+  padding: 0.35rem 0.85rem;
+  background: linear-gradient(135deg, #f3e8ff, #ede9fe);
+  color: #7c3aed;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid #e9d5ff;
+}
+
 /* Usuario info */
 .usuario-info {
   display: flex;

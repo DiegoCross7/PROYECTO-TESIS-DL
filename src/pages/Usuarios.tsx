@@ -86,7 +86,8 @@ export default function Usuarios() {
       email: "kathryn@microsoft.com",
       fechaCreacion: "13/01/2025",
       estado: "Activo",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Kathryn"
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Kathryn",
+      rol: "Scrum Master"
     },
     {
       id: 7,
@@ -94,7 +95,8 @@ export default function Usuarios() {
       email: "jacob@yahoo.com",
       fechaCreacion: "22/02/2025",
       estado: "Activo",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jacob"
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jacob",
+      rol: "DevOps Engineer"
     },
     {
       id: 8,
@@ -102,7 +104,8 @@ export default function Usuarios() {
       email: "kristin@facebook.com",
       fechaCreacion: "17/04/2025",
       estado: "Inactivo",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Kristin"
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Kristin",
+      rol: "Frontend Developer"
     },
     {
       id: 9,
@@ -110,7 +113,8 @@ export default function Usuarios() {
       email: "courtney@apple.com",
       fechaCreacion: "28/06/2025",
       estado: "Activo",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Courtney"
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Courtney",
+      rol: "Backend Developer"
     },
     {
       id: 10,
@@ -118,7 +122,8 @@ export default function Usuarios() {
       email: "theresa@amazon.com",
       fechaCreacion: "15/07/2025",
       estado: "Activo",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Theresa"
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Theresa",
+      rol: "QA Tester"
     }
   ]);
 
@@ -289,6 +294,7 @@ export default function Usuarios() {
           <thead>
             <tr>
               <th>Nombre de usuario</th>
+              <th>Rol</th>
               <th>Fecha Creación</th>
               <th>Correo</th>
               <th>Estatus</th>
@@ -303,6 +309,9 @@ export default function Usuarios() {
                     <img src={usuario.avatar} alt={usuario.nombre} className="usuario-avatar" />
                     <span>{usuario.nombre}</span>
                   </div>
+                </td>
+                <td>
+                  <span className="usuario-rol">{usuario.rol || 'Sin asignar'}</span>
                 </td>
                 <td>{usuario.fechaCreacion}</td>
                 <td>{usuario.email}</td>
