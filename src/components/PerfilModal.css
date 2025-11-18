@@ -9,6 +9,8 @@
   left: 0;
   right: 0;
   bottom: 0;
+  width: 100vw;
+  height: 100vh;
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(8px);
   display: flex;
@@ -16,6 +18,7 @@
   justify-content: center;
   z-index: 1000;
   animation: fadeIn 0.3s ease;
+  padding: 1rem;
 }
 
 @keyframes fadeIn {
@@ -34,9 +37,14 @@
   padding: 2.5rem;
   width: 90%;
   max-width: 450px;
+  max-height: 85vh;
+  overflow-y: auto;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   animation: slideUp 0.3s ease;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 @keyframes slideUp {
