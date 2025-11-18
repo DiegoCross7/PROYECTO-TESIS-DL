@@ -1,5 +1,5 @@
 /* ============================================
-   ANALYTICS MODAL - ESTILOS
+ANALYTICS MODAL - ESTILOS
    ============================================ */
 
 .analytics-overlay {
@@ -651,18 +651,21 @@
 
 .priority-stat-card.alta h2 {
   background: linear-gradient(135deg, #EF4444, #DC2626);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .priority-stat-card.media h2 {
   background: linear-gradient(135deg, #F59E0B, #D97706);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .priority-stat-card.baja h2 {
   background: linear-gradient(135deg, #22C55E, #16A34A);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
