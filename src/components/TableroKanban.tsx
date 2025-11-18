@@ -3,6 +3,7 @@ import './TableroKanban.css';
 import NuevaTareaModal from './NuevaTareaModal';
 import VerTareaModal from './VerTareaModal';
 import EditarTareaModal from './EditarTareaModal';
+import AnalyticsModal from './AnalyticsModal';
 
 interface Tarea {
   id: number;
@@ -23,6 +24,7 @@ export default function TableroKanban({ nombreProyecto, tareasIniciales = [], on
   const [mostrarModalTarea, setMostrarModalTarea] = useState(false);
   const [mostrarModalVer, setMostrarModalVer] = useState(false);
   const [mostrarModalEditar, setMostrarModalEditar] = useState(false);
+  const [mostrarAnalytics, setMostrarAnalytics] = useState(false);
   const [tareaSeleccionada, setTareaSeleccionada] = useState<Tarea | null>(null);
   const [columnaSeleccionada, setColumnaSeleccionada] = useState<'porHacer' | 'enProgreso' | 'hecho'>('porHacer');
   const [menuAbierto, setMenuAbierto] = useState<number | null>(null);
@@ -223,7 +225,7 @@ export default function TableroKanban({ nombreProyecto, tareasIniciales = [], on
               <span className="invitar-mas">+2</span>
             </div>
           </button>
-          <button className="btn-analytics">
+          <button className="btn-analytics" onClick={() => setMostrarAnalytics(true)}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
               <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z" />
             </svg>
@@ -477,6 +479,38 @@ export default function TableroKanban({ nombreProyecto, tareasIniciales = [], on
               setTareaSeleccionada(null);
             }}
             onGuardar={guardarEdicion}
+          />
+        )}
+
+        {/* Modal Analytics */}
+        {mostrarAnalytics && (
+          <AnalyticsModal
+            onClose={() => setMostrarAnalytics(false)}
+            tareas={{
+              porHacer: tareas.porHacer.map(t => ({
+                ...t,
+                asignado: t.asignados[0] || '',
+                avatar: t.asignados[0] || '',
+                fechaCreacion: new Date().toISOString().split('T')[0],
+                etiquetas: []
+              })),
+              enProgreso: tareas.enProgreso.map(t => ({
+                ...t,
+                asignado: t.asignados[0] || '',
+                avatar: t.asignados[0] || '',
+                fechaCreacion: new Date().toISOString().split('T')[0],
+                etiquetas: []
+              })),
+              revision: [],
+              completado: tareas.hecho.map(t => ({
+                ...t,
+                asignado: t.asignados[0] || '',
+                avatar: t.asignados[0] || '',
+                fechaCreacion: new Date().toISOString().split('T')[0],
+                etiquetas: []
+              }))
+            }}
+            nombreProyecto={nombreProyecto}
           />
         )}
     </div>

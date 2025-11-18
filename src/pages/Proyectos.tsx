@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './Proyectos.css';
 import DetalleProyectoModal from '../components/DetalleProyectoModal';
 import NuevoProyectoModal from '../components/NuevoProyectoModal';
+import EditarProyectoModal from '../components/EditarProyectoModal';
 import TableroKanban from '../components/TableroKanban';
 
 interface TareaInicial {
@@ -35,14 +36,18 @@ interface Proyecto {
   tareasIniciales?: TareaInicial[];
 }
 
-export default function Proyectos() {
+interface ProyectosProps {
+  proyectoIdSeleccionado?: number | null;
+  onLimpiarSeleccion?: () => void;
+}
+
+export default function Proyectos({ proyectoIdSeleccionado, onLimpiarSeleccion }: ProyectosProps = {}) {
   const [proyectoSeleccionado, setProyectoSeleccionado] = useState<Proyecto | null>(null);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mostrarNuevoProyecto, setMostrarNuevoProyecto] = useState(false);
+  const [mostrarEditarProyecto, setMostrarEditarProyecto] = useState(false);
   const [mostrarKanban, setMostrarKanban] = useState(false);
-
-  // Datos ficticios de proyectos RPA
-  const proyectos: Proyecto[] = [
+  const [proyectos, setProyectos] = useState<Proyecto[]>([
     {
       id: 1,
       nombre: "BotFacturador",
@@ -144,7 +149,18 @@ export default function Proyectos() {
         { id: 8, nombre: "Kristin Watson", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Kristin", rol: "Frontend Developer" }
       ]
     }
-  ];
+  ]);
+
+  // Efecto para abrir automáticamente el Kanban cuando se selecciona un proyecto desde Configuraciones
+  useEffect(() => {
+    if (proyectoIdSeleccionado) {
+      const proyecto = proyectos.find(p => p.id === proyectoIdSeleccionado);
+      if (proyecto) {
+        abrirKanban(proyecto);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [proyectoIdSeleccionado]);
 
   const abrirDetalleProyecto = (proyecto: Proyecto) => {
     setProyectoSeleccionado(proyecto);
@@ -164,6 +180,10 @@ export default function Proyectos() {
   const cerrarKanban = () => {
     setMostrarKanban(false);
     setProyectoSeleccionado(null);
+    // Limpiar la selección del Dashboard
+    if (onLimpiarSeleccion) {
+      onLimpiarSeleccion();
+    }
   };
 
   const abrirNuevoProyecto = () => {
@@ -172,6 +192,24 @@ export default function Proyectos() {
 
   const cerrarNuevoProyecto = () => {
     setMostrarNuevoProyecto(false);
+  };
+
+  const abrirEditarProyecto = () => {
+    setMostrarEditarProyecto(true);
+  };
+
+  const cerrarEditarProyecto = () => {
+    setMostrarEditarProyecto(false);
+  };
+
+  const guardarProyecto = (proyectoEditado: Proyecto) => {
+    setProyectos(prevProyectos => 
+      prevProyectos.map(p => 
+        p.id === proyectoEditado.id ? proyectoEditado : p
+      )
+    );
+    cerrarEditarProyecto();
+    setMostrarModal(false);
   };
 
   const crearProyecto = (nuevoProyecto: {
@@ -376,6 +414,16 @@ export default function Proyectos() {
             <DetalleProyectoModal 
               proyecto={proyectoSeleccionado} 
               onClose={cerrarModal}
+              onEditar={abrirEditarProyecto}
+            />
+          )}
+
+          {/* Modal editar proyecto */}
+          {mostrarEditarProyecto && proyectoSeleccionado && (
+            <EditarProyectoModal
+              proyecto={proyectoSeleccionado}
+              onClose={cerrarEditarProyecto}
+              onGuardar={guardarProyecto}
             />
           )}
 
