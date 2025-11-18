@@ -117,6 +117,10 @@
   white-space: nowrap;
 }
 
+.filtro-container {
+  position: relative;
+}
+
 .btn-filtrar {
   display: flex;
   align-items: center;
@@ -141,6 +145,54 @@
   background: #F9FAFB;
   border-color: #d43371;
   color: #d43371;
+}
+
+.filtros-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  min-width: 150px;
+  z-index: 1000;
+  overflow: hidden;
+  animation: fadeInDown 0.3s ease;
+}
+
+.filtro-opcion {
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  background: white;
+  border: none;
+  font-size: 0.9rem;
+  color: #374151;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filtro-opcion:hover {
+  background: #F9FAFB;
+  color: #d43371;
+}
+
+.filtro-opcion.activo {
+  background: linear-gradient(135deg, rgba(212, 51, 113, 0.1), rgba(147, 51, 234, 0.1));
+  color: #d43371;
+  font-weight: 600;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ============================================

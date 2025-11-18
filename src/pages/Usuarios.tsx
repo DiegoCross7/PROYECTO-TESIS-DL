@@ -27,6 +27,8 @@ export default function Usuarios() {
   const [mostrarEditarModal, setMostrarEditarModal] = useState(false);
   const [mostrarAgregarModal, setMostrarAgregarModal] = useState(false);
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState<Usuario | null>(null);
+  const [filtroEstado, setFiltroEstado] = useState<'Todos' | 'Activo' | 'Inactivo'>('Todos');
+  const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const usuariosPorPagina = 8;
 
   // ============================================
@@ -35,6 +37,15 @@ export default function Usuarios() {
   
   // Lista de usuarios (TODO: Obtener del backend via API GET /api/usuarios)
   const [usuarios, setUsuarios] = useState<Usuario[]>([
+    {
+      id: 0,
+      nombre: "Diego Gabriel",
+      email: "diegogabrielcentenpfalcon7@gmail.com",
+      fechaCreacion: "01/01/2025",
+      estado: "Activo",
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Diego",
+      rol: "Desarrollador RPA"
+    },
     {
       id: 1,
       nombre: "Jane Cooper",
@@ -132,10 +143,14 @@ export default function Usuarios() {
   // ============================================
 
   // Filtrar usuarios por búsqueda
-  const usuariosFiltrados = usuarios.filter(usuario =>
-    usuario.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-    usuario.email.toLowerCase().includes(busqueda.toLowerCase())
-  );
+  const usuariosFiltrados = usuarios.filter(usuario => {
+    const cumpleBusqueda = usuario.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+      usuario.email.toLowerCase().includes(busqueda.toLowerCase());
+    
+    const cumpleEstado = filtroEstado === 'Todos' || usuario.estado === filtroEstado;
+    
+    return cumpleBusqueda && cumpleEstado;
+  });
 
   // Calcular estadísticas
   const usuariosTotales = usuarios.length;
@@ -240,12 +255,45 @@ export default function Usuarios() {
 
         <div className="usuarios-controles">
           <span className="texto-ordenar">Corto por: Más reciente</span>
-          <button className="btn-filtrar">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M18.75 12.75h1.5a.75.75 0 000-1.5h-1.5a.75.75 0 000 1.5zM12 6a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 0112 6zM12 18a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM3.75 6.75h1.5a.75.75 0 100-1.5h-1.5a.75.75 0 000 1.5zM5.25 18.75h-1.5a.75.75 0 010-1.5h1.5a.75.75 0 010 1.5zM3 12a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 013 12zM9 3.75a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5zM12.75 12a2.25 2.25 0 114.5 0 2.25 2.25 0 01-4.5 0zM9 15.75a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z" />
-            </svg>
-            Filtrar
-          </button>
+          <div className="filtro-container">
+            <button className="btn-filtrar" onClick={() => setMostrarFiltros(!mostrarFiltros)}>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.75 12.75h1.5a.75.75 0 000-1.5h-1.5a.75.75 0 000 1.5zM12 6a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 0112 6zM12 18a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM3.75 6.75h1.5a.75.75 0 100-1.5h-1.5a.75.75 0 000 1.5zM5.25 18.75h-1.5a.75.75 0 010-1.5h1.5a.75.75 0 010 1.5zM3 12a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 013 12zM9 3.75a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5zM12.75 12a2.25 2.25 0 114.5 0 2.25 2.25 0 01-4.5 0zM9 15.75a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z" />
+              </svg>
+              Filtrar
+            </button>
+            {mostrarFiltros && (
+              <div className="filtros-dropdown">
+                <button
+                  className={`filtro-opcion ${filtroEstado === 'Todos' ? 'activo' : ''}`}
+                  onClick={() => {
+                    setFiltroEstado('Todos');
+                    setMostrarFiltros(false);
+                  }}
+                >
+                  Todos
+                </button>
+                <button
+                  className={`filtro-opcion ${filtroEstado === 'Activo' ? 'activo' : ''}`}
+                  onClick={() => {
+                    setFiltroEstado('Activo');
+                    setMostrarFiltros(false);
+                  }}
+                >
+                  Activos
+                </button>
+                <button
+                  className={`filtro-opcion ${filtroEstado === 'Inactivo' ? 'activo' : ''}`}
+                  onClick={() => {
+                    setFiltroEstado('Inactivo');
+                    setMostrarFiltros(false);
+                  }}
+                >
+                  Inactivos
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
