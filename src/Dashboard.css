@@ -442,7 +442,7 @@
    ============================================ */
 .btn-chatbot-float {
   position: fixed;
-  bottom: 2rem;
+  bottom: 0.5rem;
   left: 2rem;
   width: 270px;
   height: 270px;
