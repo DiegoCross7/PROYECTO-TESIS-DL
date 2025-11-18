@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import './PaginaInicio.css';
+import imgLogoPequeno from './assets/images/img_logo_login_1_logo SEMPITERNO.png';
+import imgLogoMedio from './assets/images/img_logo_login_2_personaje sentado.png';
+import imgLogoGrande from './assets/images/img_logo_login_3_cactus.png';
 
 interface PaginaInicioProps {
   onLogin: () => void;
@@ -36,15 +39,6 @@ export default function PaginaInicio({ onLogin }: PaginaInicioProps) {
   
   // Estado para el foco de los campos (para efectos visuales)
   const [campoActivo, setCampoActivo] = useState<'correo' | 'password' | null>(null);
-
-  // ============================================
-  // IMÁGENES Y RECURSOS
-  // ============================================
-  
-  // URLs de las imágenes del diseño (logos y decoraciones)
-  const imgLogoGrande = "https://www.figma.com/api/mcp/asset/ae596980-1b34-43b8-95d7-de6ebcaaea8c";
-  const imgLogoMedio = "https://www.figma.com/api/mcp/asset/92b1ddd2-5348-4306-9f4f-319acff4275a";
-  const imgLogoPequeno = "https://www.figma.com/api/mcp/asset/a75824df-6f8d-4b1b-bca3-d50365f0b304";
 
   // ============================================
   // FUNCIONES DEL COMPONENTE
