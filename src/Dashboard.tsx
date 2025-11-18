@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Spline from '@splinetool/react-spline';
 import './Dashboard.css';
 
 // Componentes de Layout
@@ -49,20 +50,21 @@ export default function Dashboard({ onCerrarSesion }: DashboardProps) {
   const [mostrarPerfil, setMostrarPerfil] = useState(false);
   const [mostrarChatbot, setMostrarChatbot] = useState(false);
   const [vistaActual, setVistaActual] = useState<'inicio' | 'usuarios' | 'proyectos' | 'configuraciones'>('inicio');
+  const [proyectoSeleccionadoId, setProyectoSeleccionadoId] = useState<number | null>(null);
 
   // ============================================
   // DATOS FICTICIOS (TODO: Conectar con Backend)
   // ============================================
   
-  // Datos del usuario (TODO: Obtener del backend)
-  const usuario = {
+  // Estado del usuario - ahora actualizable
+  const [usuario, setUsuario] = useState({
     nombre: "Diego Gabriel",
     rol: "Desarrollador RPA",
     email: "diegogabrielcentenpfalcon7@gmail.com",
     telefono: "+51 946595031",
     estado: "Activo",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Diego"
-  };
+  });
 
   // ============================================
   // FUNCIONES DEL COMPONENTE
@@ -78,6 +80,20 @@ export default function Dashboard({ onCerrarSesion }: DashboardProps) {
 
   const cerrarPerfil = () => {
     setMostrarPerfil(false);
+  };
+
+  const actualizarUsuario = (datosActualizados: Partial<typeof usuario>) => {
+    setUsuario(prev => ({ ...prev, ...datosActualizados }));
+  };
+
+  const abrirKanbanProyecto = (proyectoId: number) => {
+    if (proyectoId === 0) {
+      // Si es 0, limpiar la selección
+      setProyectoSeleccionadoId(null);
+    } else {
+      setProyectoSeleccionadoId(proyectoId);
+    }
+    setVistaActual('proyectos');
   };
 
   // ============================================
@@ -96,8 +112,20 @@ export default function Dashboard({ onCerrarSesion }: DashboardProps) {
       <main className="dashboard-main">
         {vistaActual === 'inicio' && <Inicio />}
         {vistaActual === 'usuarios' && <Usuarios />}
-        {vistaActual === 'proyectos' && <Proyectos />}
-        {vistaActual === 'configuraciones' && <Configuraciones />}
+        {vistaActual === 'proyectos' && (
+          <Proyectos 
+            proyectoIdSeleccionado={proyectoSeleccionadoId}
+            onLimpiarSeleccion={() => setProyectoSeleccionadoId(null)}
+          />
+        )}
+        {vistaActual === 'configuraciones' && (
+          <Configuraciones 
+            usuario={usuario}
+            onNavigate={setVistaActual}
+            onAbrirKanban={abrirKanbanProyecto}
+            onActualizarUsuario={actualizarUsuario}
+          />
+        )}
       </main>
 
       {/* Modal de perfil */}
@@ -115,14 +143,16 @@ export default function Dashboard({ onCerrarSesion }: DashboardProps) {
         <SempiBot onClose={toggleChatbot} />
       )}
 
-      {/* Botón flotante del chatbot */}
+      {/* Botón flotante del chatbot con modelo 3D */}
       {!mostrarChatbot && (
-        <button className="btn-chatbot-float" onClick={toggleChatbot}>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-            <path fillRule="evenodd" d="M4.848 2.771A49.144 49.144 0 0112 2.25c2.43 0 4.817.178 7.152.52 1.978.292 3.348 2.024 3.348 3.97v6.02c0 1.946-1.37 3.678-3.348 3.97a48.901 48.901 0 01-3.476.383.39.39 0 00-.297.17l-2.755 4.133a.75.75 0 01-1.248 0l-2.755-4.133a.39.39 0 00-.297-.17 48.9 48.9 0 01-3.476-.384c-1.978-.29-3.348-2.024-3.348-3.97V6.741c0-1.946 1.37-3.68 3.348-3.97zM6.75 8.25a.75.75 0 01.75-.75h9a.75.75 0 010 1.5h-9a.75.75 0 01-.75-.75zm.75 2.25a.75.75 0 000 1.5H12a.75.75 0 000-1.5H7.5z" clipRule="evenodd" />
-          </svg>
-          <span className="chatbot-badge">SempiBot</span>
-        </button>
+        <div className="btn-chatbot-float" onClick={toggleChatbot}>
+          <div>
+            <Spline
+              scene="https://prod.spline.design/k0d4T3ahZzlAb5kZ/scene.splinecode"
+              style={{ width: '100%', height: '100%', cursor: 'pointer' }}
+            />
+          </div>
+        </div>
       )}
     </div>
   );
