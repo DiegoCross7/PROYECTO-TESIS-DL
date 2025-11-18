@@ -1,4 +1,5 @@
 import './Header.css';
+import logoSempiterno from '../../assets/images/img_logo_login_1_logo SEMPITERNO.png';
 
 interface HeaderProps {
   usuario: {
@@ -20,7 +21,7 @@ export default function Header({ usuario, onProfileClick }: HeaderProps) {
     <header className="dashboard-header">
       <div className="header-logo">
         <img 
-          src="https://www.figma.com/api/mcp/asset/a75824df-6f8d-4b1b-bca3-d50365f0b304" 
+          src={logoSempiterno} 
           alt="SEMPITERNO Logo" 
           className="logo-sempiterno"
         />

@@ -120,10 +120,17 @@ export default function AgregarUsuarioModal({ onClose, onAdd }: AgregarUsuarioMo
   };
 
   // Manejar cambio de foto
-  const handleFotoChange = () => {
-    // Generar nuevo avatar aleatorio
-    const nuevoAvatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${Math.random()}`;
-    setAvatarPreview(nuevoAvatar);
+  const handleFotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else if (file) {
+      alert('Por favor selecciona un archivo de imagen válido');
+    }
   };
 
   // Agregar usuario
@@ -237,10 +244,17 @@ export default function AgregarUsuarioModal({ onClose, onAdd }: AgregarUsuarioMo
                   alt="Avatar preview"
                   className="avatar-preview"
                 />
+                <input
+                  type="file"
+                  id="avatar-input-agregar"
+                  accept="image/*"
+                  onChange={handleFotoChange}
+                  style={{ display: 'none' }}
+                />
                 <button 
                   type="button"
                   className="btn-cambiar-foto"
-                  onClick={handleFotoChange}
+                  onClick={() => document.getElementById('avatar-input-agregar')?.click()}
                 >
                   Subir Foto
                 </button>

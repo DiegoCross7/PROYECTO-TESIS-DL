@@ -113,10 +113,17 @@ export default function EditarUsuarioModal({ usuario, onClose, onSave }: EditarU
   };
 
   // Manejar cambio de foto
-  const handleFotoChange = () => {
-    // TODO: Implementar subida de imagen real
-    const nuevoAvatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${Math.random()}`;
-    setFormData(prev => ({ ...prev, avatar: nuevoAvatar }));
+  const handleFotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, avatar: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    } else if (file) {
+      alert('Por favor selecciona un archivo de imagen válido');
+    }
   };
 
   // Guardar cambios
@@ -234,10 +241,17 @@ export default function EditarUsuarioModal({ usuario, onClose, onSave }: EditarU
                   alt={formData.nombre}
                   className="avatar-preview"
                 />
+                <input
+                  type="file"
+                  id="avatar-input-editar"
+                  accept="image/*"
+                  onChange={handleFotoChange}
+                  style={{ display: 'none' }}
+                />
                 <button 
                   type="button"
                   className="btn-cambiar-foto"
-                  onClick={handleFotoChange}
+                  onClick={() => document.getElementById('avatar-input-editar')?.click()}
                 >
                   Subir Foto
                 </button>
