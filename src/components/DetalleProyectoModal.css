@@ -431,3 +431,133 @@
     text-align: center;
   }
 }
+
+/* ============================================
+   DOCUMENTO PDF - ESTILOS
+   ============================================ */
+
+.documento-preview-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.documento-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, #f3e8ff, #ede9fe);
+  border: 1px solid #e9d5ff;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.documento-info:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+}
+
+.documento-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #d43371, #9333EA);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.documento-icon svg {
+  width: 28px;
+  height: 28px;
+  color: white;
+}
+
+.documento-detalles {
+  flex: 1;
+  min-width: 0;
+}
+
+.documento-nombre {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 0.25rem 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.documento-meta {
+  font-size: 0.85rem;
+  color: #7c3aed;
+  margin: 0;
+}
+
+.btn-descargar-pdf {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(135deg, #d43371, #9333EA);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.btn-descargar-pdf svg {
+  width: 18px;
+  height: 18px;
+}
+
+.btn-descargar-pdf:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(212, 51, 113, 0.3);
+}
+
+.btn-descargar-pdf:active {
+  transform: translateY(0);
+}
+
+.pdf-preview {
+  border: 2px dashed #D1D5DB;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #F9FAFB;
+}
+
+.pdf-preview-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.pdf-preview-placeholder svg {
+  width: 80px;
+  height: 80px;
+  color: #9CA3AF;
+  margin-bottom: 1rem;
+}
+
+.preview-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 0.5rem 0;
+}
+
+.preview-hint {
+  font-size: 0.9rem;
+  color: #9CA3AF;
+  margin: 0;
+}
