@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './EditarTareaModal.css';
+import { useNotificaciones } from '../hooks/useNotificaciones';
 
 interface Tarea {
   id: number;
@@ -17,6 +18,8 @@ interface EditarTareaModalProps {
 }
 
 export default function EditarTareaModal({ tarea, onClose, onGuardar }: EditarTareaModalProps) {
+  const { warning } = useNotificaciones();
+  
   const [titulo, setTitulo] = useState(tarea.titulo);
   const [descripcion, setDescripcion] = useState(tarea.descripcion);
   const [prioridad, setPrioridad] = useState<'Alta' | 'Media' | 'Baja'>(tarea.prioridad);
@@ -43,8 +46,8 @@ export default function EditarTareaModal({ tarea, onClose, onGuardar }: EditarTa
   };
 
   const handleGuardar = () => {
-    if (!titulo.trim() || !descripcion.trim()) {
-      alert('Por favor completa todos los campos obligatorios');
+    if (!titulo.trim() || !descripcion.trim() || !prioridad) {
+      warning('Por favor completa todos los campos obligatorios');
       return;
     }
 

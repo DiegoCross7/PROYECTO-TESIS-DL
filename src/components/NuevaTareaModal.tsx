@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './NuevaTareaModal.css';
+import { useNotificaciones } from '../hooks/useNotificaciones';
 
 interface NuevaTarea {
   titulo: string;
@@ -15,6 +16,8 @@ interface NuevaTareaModalProps {
 }
 
 export default function NuevaTareaModal({ onClose, onCrear }: NuevaTareaModalProps) {
+  const { warning } = useNotificaciones();
+  
   const [titulo, setTitulo] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [prioridad, setPrioridad] = useState<'Alta' | 'Media' | 'Baja' | ''>('');
@@ -42,7 +45,7 @@ export default function NuevaTareaModal({ onClose, onCrear }: NuevaTareaModalPro
 
   const handleCrear = () => {
     if (!titulo.trim() || !descripcion.trim() || !prioridad) {
-      alert('Por favor completa todos los campos obligatorios');
+      warning('Por favor completa todos los campos obligatorios');
       return;
     }
 
