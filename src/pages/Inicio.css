@@ -4,13 +4,17 @@
 
 .inicio-container {
   padding: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .inicio-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  flex-shrink: 0;
 }
 
 .page-title {
@@ -18,6 +22,24 @@
   font-weight: 700;
   color: #111827;
   margin: 0;
+}
+
+.page-subtitle {
+  font-size: 0.9rem;
+  color: #6B7280;
+  margin: 0.5rem 0 0 0;
+}
+
+.header-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, rgba(212, 51, 113, 0.1), rgba(147, 51, 234, 0.1));
+  border: 1px solid rgba(212, 51, 113, 0.2);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #d43371;
 }
 
 .btn-grid-view {
@@ -50,8 +72,10 @@
 /* Grid de tarjetas */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
+  flex: 1;
+  align-items: stretch;
 }
 
 /* Tarjetas */
@@ -61,11 +85,23 @@
   padding: 1.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .dashboard-card:hover {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
+}
+
+/* Cards que ocupan el ancho completo */
+.rendimiento-card {
+  grid-column: span 3;
+}
+
+.prioridad-dona-card {
+  grid-column: span 3;
 }
 
 .card-header {
@@ -196,10 +232,174 @@
   height: auto;
 }
 
+/* Priority Donut Card */
+.prioridad-dona-card {
+  grid-column: span 2;
+  padding: 1.5rem;
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.dona-content {
+  display: flex;
+  gap: 3rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.dona-chart-dashboard {
+  flex-shrink: 0;
+}
+
+.dona-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.stat-priority {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stat-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.stat-dot.rojo {
+  background-color: #ef4444;
+}
+
+.stat-dot.naranja {
+  background-color: #f59e0b;
+}
+
+.stat-dot.azul {
+  background-color: #3b82f6;
+}
+
+.stat-priority-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stat-priority-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.stat-priority-value {
+  font-size: 0.85rem;
+  color: #6B7280;
+}
+
+/* Team Distribution Card */
+.equipo-card {
+  padding: 1.5rem;
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.equipo-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.equipo-bars {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.equipo-bar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.equipo-bar-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.equipo-proyecto-nombre {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.equipo-miembros-count {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #6B7280;
+  background: #F3F4F6;
+  padding: 0.125rem 0.5rem;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.equipo-bar-container {
+  width: 100%;
+  height: 6px;
+  background: #F3F4F6;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.equipo-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
 /* Responsive */
+@media (max-width: 1200px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .rendimiento-card,
+  .prioridad-dona-card {
+    grid-column: span 2;
+  }
+
+  .equipo-card {
+    grid-column: span 1;
+  }
+}
+
 @media (max-width: 768px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
+  }
+
+  .rendimiento-card,
+  .prioridad-dona-card,
+  .equipo-card {
+    grid-column: span 1;
+  }
+
+  .dona-content,
+  .equipo-content {
+    flex-direction: column;
+    gap: 2rem;
   }
 
   .tareas-chart,
