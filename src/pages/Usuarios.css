@@ -612,3 +612,60 @@
     height: 32px;
   }
 }
+
+/* ============================================
+   MODAL DE ELIMINACIÓN DE USUARIO
+   ============================================ */
+.usuario-eliminar-detalle {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #E5E7EB;
+}
+
+.usuario-avatar-modal {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #F3F4F6;
+}
+
+.usuario-info-modal {
+  flex: 1;
+}
+
+.usuario-info-modal h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 0.5rem;
+}
+
+.usuario-info-modal p {
+  font-size: 0.9rem;
+  color: #6B7280;
+  margin: 0 0 0.5rem;
+}
+
+.badge-estado {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.badge-estado.activo {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.badge-estado.inactivo {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+

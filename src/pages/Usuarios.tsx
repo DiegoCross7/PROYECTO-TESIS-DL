@@ -2,6 +2,8 @@ import { useState } from 'react';
 import './Usuarios.css';
 import EditarUsuarioModal from '../components/EditarUsuarioModal';
 import AgregarUsuarioModal from '../components/AgregarUsuarioModal';
+import { NotificacionesContainer } from '../components/Notificacion';
+import { useNotificaciones } from '../hooks/useNotificaciones';
 
 interface Usuario {
   id: number;
@@ -28,6 +30,11 @@ export default function Usuarios() {
   const [mostrarAgregarModal, setMostrarAgregarModal] = useState(false);
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState<Usuario | null>(null);
   const [filtroEstado, setFiltroEstado] = useState<'Todos' | 'Activo' | 'Inactivo'>('Todos');
+  const [mostrarEliminar, setMostrarEliminar] = useState(false);
+  const [usuarioAEliminar, setUsuarioAEliminar] = useState<Usuario | null>(null);
+  
+  // Sistema de notificaciones
+  const { notificaciones, cerrarNotificacion, success } = useNotificaciones();
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const usuariosPorPagina = 8;
 
@@ -188,7 +195,7 @@ export default function Usuarios() {
       u.id === usuarioEditado.id ? usuarioEditado : u
     ));
     // TODO: Enviar al backend PUT /api/usuarios/:id
-    alert('Usuario actualizado correctamente');
+    success(`Usuario "${usuarioEditado.nombre}" actualizado correctamente`);
   };
 
   // Abrir modal de agregar
@@ -210,15 +217,26 @@ export default function Usuarios() {
     
     setUsuarios([...usuarios, usuario]);
     // TODO: Enviar al backend POST /api/usuarios
-    alert('Usuario agregado correctamente');
+    success(`Usuario "${nuevoUsuario.nombre}" agregado correctamente`);
   };
 
   // Eliminar usuario
-  const eliminarUsuario = (id: number) => {
-    if (confirm('¿Estás seguro de eliminar este usuario?')) {
-      setUsuarios(usuarios.filter(usuario => usuario.id !== id));
+  const abrirEliminarUsuario = (usuario: Usuario) => {
+    setUsuarioAEliminar(usuario);
+    setMostrarEliminar(true);
+  };
+
+  const cerrarEliminarUsuario = () => {
+    setMostrarEliminar(false);
+    setUsuarioAEliminar(null);
+  };
+
+  const confirmarEliminarUsuario = () => {
+    if (usuarioAEliminar) {
+      setUsuarios(usuarios.filter(usuario => usuario.id !== usuarioAEliminar.id));
       // TODO: Enviar al backend DELETE /api/usuarios/:id
-      alert('Usuario eliminado correctamente');
+      success(`Usuario "${usuarioAEliminar.nombre}" eliminado correctamente`);
+      cerrarEliminarUsuario();
     }
   };
 
@@ -396,7 +414,7 @@ export default function Usuarios() {
                     {/* Botón eliminar */}
                     <button 
                       className="btn-accion eliminar"
-                      onClick={() => eliminarUsuario(usuario.id)}
+                      onClick={() => abrirEliminarUsuario(usuario)}
                       title="Eliminar usuario"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
@@ -481,6 +499,54 @@ export default function Usuarios() {
           onAdd={agregarNuevoUsuario}
         />
       )}
+
+      {/* Modal de confirmación de eliminación */}
+      {mostrarEliminar && usuarioAEliminar && (
+        <div className="modal-overlay" onClick={cerrarEliminarUsuario}>
+          <div className="modal-eliminar" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-eliminar-header">
+              <div className="modal-eliminar-icono">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <h2 className="modal-eliminar-titulo">¿Eliminar Usuario?</h2>
+              <p className="modal-eliminar-descripcion">
+                Esta acción no se puede deshacer. Se eliminará permanentemente el usuario:
+              </p>
+            </div>
+
+            <div className="modal-eliminar-info">
+              <div className="usuario-eliminar-detalle">
+                <img src={usuarioAEliminar.avatar} alt={usuarioAEliminar.nombre} className="usuario-avatar-modal" />
+                <div className="usuario-info-modal">
+                  <h3>{usuarioAEliminar.nombre}</h3>
+                  <p>{usuarioAEliminar.email}</p>
+                  <span className={`badge-estado ${usuarioAEliminar.estado.toLowerCase()}`}>{usuarioAEliminar.estado}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="modal-eliminar-footer">
+              <button className="btn-cancelar-eliminar" onClick={cerrarEliminarUsuario}>
+                Cancelar
+              </button>
+              <button className="btn-confirmar-eliminar" onClick={confirmarEliminarUsuario}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path fillRule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clipRule="evenodd" />
+                </svg>
+                Eliminar Usuario
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Contenedor de notificaciones */}
+      <NotificacionesContainer 
+        notificaciones={notificaciones} 
+        onClose={cerrarNotificacion}
+      />
     </div>
   );
 }

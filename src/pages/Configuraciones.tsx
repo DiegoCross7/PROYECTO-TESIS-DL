@@ -1,5 +1,7 @@
 import { useState, useRef } from 'react';
 import './Configuraciones.css';
+import { NotificacionesContainer } from '../components/Notificacion';
+import { useNotificaciones } from '../hooks/useNotificaciones';
 
 interface Usuario {
   nombre: string;
@@ -27,6 +29,9 @@ interface Proyecto {
 }
 
 export default function Configuraciones({ usuario, onNavigate, onAbrirKanban, onActualizarUsuario }: ConfiguracionesProps) {
+  // Sistema de notificaciones
+  const { notificaciones, cerrarNotificacion, success } = useNotificaciones();
+  
   // Estados para el formulario de edición - inicializados con datos del usuario
   const [nombreCompleto, setNombreCompleto] = useState(usuario.nombre);
   const [correo, setCorreo] = useState(usuario.email);
@@ -98,7 +103,7 @@ export default function Configuraciones({ usuario, onNavigate, onAbrirKanban, on
       avatar,
       contrasena: contrasena ? '******' : 'sin cambios'
     });
-    alert('Información actualizada correctamente');
+    success('Información de perfil actualizada correctamente');
   };
 
   const handleVerTodo = (e: React.MouseEvent) => {
@@ -282,6 +287,12 @@ export default function Configuraciones({ usuario, onNavigate, onAbrirKanban, on
           ))}
         </div>
       </div>
+
+      {/* Contenedor de notificaciones */}
+      <NotificacionesContainer 
+        notificaciones={notificaciones} 
+        onClose={cerrarNotificacion}
+      />
     </div>
   );
 }
