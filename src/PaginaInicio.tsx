@@ -3,6 +3,8 @@ import './PaginaInicio.css';
 import imgLogoPequeno from './assets/images/img_logo_login_1_logo SEMPITERNO.png';
 import imgLogoMedio from './assets/images/img_logo_login_2_personaje sentado.png';
 import imgLogoGrande from './assets/images/img_logo_login_3_cactus.png';
+import { NotificacionesContainer } from './components/Notificacion';
+import { useNotificaciones } from './hooks/useNotificaciones';
 
 interface PaginaInicioProps {
   onLogin: () => void;
@@ -21,6 +23,8 @@ interface PaginaInicioProps {
  * - Gradiente de fondo personalizado
  */
 export default function PaginaInicio({ onLogin }: PaginaInicioProps) {
+  const { notificaciones, cerrarNotificacion, warning, info } = useNotificaciones();
+  
   // ============================================
   // ESTADOS DEL COMPONENTE
   // ============================================
@@ -54,13 +58,13 @@ export default function PaginaInicio({ onLogin }: PaginaInicioProps) {
     
     // Validar que los campos no estén vacíos
     if (!correo || !password) {
-      alert('Por favor, complete todos los campos');
+      warning('Por favor, complete todos los campos');
       return;
     }
 
     // Validar que se acepten los términos
     if (!aceptarTerminos) {
-      alert('Debe aceptar los términos y condiciones');
+      warning('Debe aceptar los términos y condiciones');
       return;
     }
 
@@ -95,7 +99,7 @@ export default function PaginaInicio({ onLogin }: PaginaInicioProps) {
    */
   const manejarRecuperarPassword = (e: React.MouseEvent) => {
     e.preventDefault(); // Prevenir navegación
-    alert('Para recuperar su contraseña, póngase en contacto con el administrador');
+    info('Para recuperar su contraseña, póngase en contacto con el administrador');
   };
 
   // ============================================
@@ -300,6 +304,9 @@ export default function PaginaInicio({ onLogin }: PaginaInicioProps) {
           </div>
         </div>
       </div>
+      
+      {/* Contenedor de notificaciones */}
+      <NotificacionesContainer notificaciones={notificaciones} onClose={cerrarNotificacion} />
     </div>
   );
 }
