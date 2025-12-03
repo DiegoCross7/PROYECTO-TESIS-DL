@@ -1,0 +1,166 @@
+/* Contenedor de notificaciones */
+.notificaciones-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+  max-width: 420px;
+}
+
+/* Item de notificación */
+.notificacion-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08);
+  min-width: 320px;
+  max-width: 420px;
+  pointer-events: all;
+  animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-left: 4px solid;
+}
+
+.notificacion-item:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15), 0 6px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.notificacion-saliendo {
+  animation: slideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+/* Icono de la notificación */
+.notificacion-icono {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notificacion-icono svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Mensaje */
+.notificacion-mensaje {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #1f2937;
+  margin: 0;
+}
+
+/* Botón cerrar */
+.notificacion-cerrar {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  padding: 0;
+}
+
+.notificacion-cerrar:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #1f2937;
+}
+
+.notificacion-cerrar svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Tipos de notificación - Success */
+.notificacion-success {
+  border-left-color: #10b981;
+}
+
+.notificacion-success .notificacion-icono {
+  color: #10b981;
+}
+
+/* Tipos de notificación - Error */
+.notificacion-error {
+  border-left-color: #ef4444;
+}
+
+.notificacion-error .notificacion-icono {
+  color: #ef4444;
+}
+
+/* Tipos de notificación - Warning */
+.notificacion-warning {
+  border-left-color: #f59e0b;
+}
+
+.notificacion-warning .notificacion-icono {
+  color: #f59e0b;
+}
+
+/* Tipos de notificación - Info */
+.notificacion-info {
+  border-left-color: #3b82f6;
+}
+
+.notificacion-info .notificacion-icono {
+  color: #3b82f6;
+}
+
+/* Animaciones */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .notificaciones-container {
+    top: 12px;
+    right: 12px;
+    left: 12px;
+    max-width: none;
+  }
+
+  .notificacion-item {
+    min-width: auto;
+    max-width: none;
+  }
+}
