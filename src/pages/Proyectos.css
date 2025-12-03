@@ -384,6 +384,13 @@
   color: #6B7280;
 }
 
+/* Acciones del proyecto */
+.proyecto-acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .btn-ver-mas {
   display: flex;
   align-items: center;
@@ -408,6 +415,201 @@
   background: #d43371;
   color: white;
   border-color: #d43371;
+}
+
+/* Botón eliminar proyecto */
+.btn-eliminar-proyecto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid #FEE2E2;
+  border-radius: 8px;
+  color: #EF4444;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-eliminar-proyecto svg {
+  width: 18px;
+  height: 18px;
+}
+
+.btn-eliminar-proyecto:hover {
+  background: linear-gradient(135deg, #EF4444, #DC2626);
+  border-color: #EF4444;
+  color: white;
+  transform: scale(1.05);
+}
+
+/* Modal de eliminación */
+.modal-eliminar {
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.modal-eliminar-header {
+  padding: 2rem 2rem 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.modal-eliminar-icono {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FEE2E2, #FECACA);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #EF4444;
+}
+
+.modal-eliminar-icono svg {
+  width: 36px;
+  height: 36px;
+}
+
+.modal-eliminar-titulo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.75rem;
+}
+
+.modal-eliminar-descripcion {
+  font-size: 0.95rem;
+  color: #6B7280;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.modal-eliminar-info {
+  padding: 1.5rem 2rem;
+  background: #F9FAFB;
+}
+
+.proyecto-eliminar-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.detalle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+}
+
+.detalle-label {
+  font-size: 0.9rem;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.detalle-valor {
+  font-size: 0.95rem;
+  color: #111827;
+  font-weight: 600;
+}
+
+.detalle-estado {
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.detalle-estado.en-progreso {
+  background: #DBEAFE;
+  color: #1E40AF;
+}
+
+.detalle-estado.completado {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.detalle-estado.en-espera {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.modal-eliminar-footer {
+  padding: 1.5rem 2rem;
+  display: flex;
+  gap: 1rem;
+  border-top: 1px solid #F3F4F6;
+}
+
+.btn-cancelar-eliminar {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  background: #F3F4F6;
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cancelar-eliminar:hover {
+  background: #E5E7EB;
+}
+
+.btn-confirmar-eliminar {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #EF4444, #DC2626);
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-confirmar-eliminar svg {
+  width: 18px;
+  height: 18px;
+}
+
+.btn-confirmar-eliminar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+}
+
+/* Animación slideUp */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ============================================

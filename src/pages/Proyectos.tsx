@@ -4,6 +4,9 @@ import DetalleProyectoModal from '../components/DetalleProyectoModal';
 import NuevoProyectoModal from '../components/NuevoProyectoModal';
 import EditarProyectoModal from '../components/EditarProyectoModal';
 import TableroKanban from '../components/TableroKanban';
+import VistaProyecto from '../components/VistaProyecto';
+import { NotificacionesContainer } from '../components/Notificacion';
+import { useNotificaciones } from '../hooks/useNotificaciones';
 
 interface TareaInicial {
   id: number;
@@ -12,6 +15,7 @@ interface TareaInicial {
   prioridad: 'Alta' | 'Media' | 'Baja';
   asignados: string[];
   diasRestantes: number;
+  estado?: 'porHacer' | 'enProgreso' | 'hecho';
 }
 
 interface Miembro {
@@ -33,6 +37,7 @@ interface Proyecto {
   tareas: number;
   tareasCompletadas: number;
   categoria: string;
+  linkDocumento?: string;
   tareasIniciales?: TareaInicial[];
 }
 
@@ -46,7 +51,15 @@ export default function Proyectos({ proyectoIdSeleccionado, onLimpiarSeleccion }
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mostrarNuevoProyecto, setMostrarNuevoProyecto] = useState(false);
   const [mostrarEditarProyecto, setMostrarEditarProyecto] = useState(false);
+  const [mostrarVistaPrevia, setMostrarVistaPrevia] = useState(false);
   const [mostrarKanban, setMostrarKanban] = useState(false);
+  const [mostrarEliminar, setMostrarEliminar] = useState(false);
+  const [proyectoAEliminar, setProyectoAEliminar] = useState<Proyecto | null>(null);
+  const [tareasActualizadas, setTareasActualizadas] = useState<TareaInicial[]>([]);
+  
+  // Sistema de notificaciones
+  const { notificaciones, cerrarNotificacion, success } = useNotificaciones();
+  
   const [proyectos, setProyectos] = useState<Proyecto[]>([
     {
       id: 1,
@@ -59,6 +72,63 @@ export default function Proyectos({ proyectoIdSeleccionado, onLimpiarSeleccion }
       categoria: "Facturación",
       tareas: 14,
       tareasCompletadas: 9,
+      linkDocumento: "https://docs.google.com/presentation/d/1EAYk18WDjIG-zp_0vLm3CsNWbJqh2mH4FMhZGIUSdcI/edit",
+      tareasIniciales: [
+        {
+          id: 1,
+          titulo: "Conectar con API de SUNAT",
+          descripcion: "Implementar la integración con el servicio de facturación electrónica de SUNAT",
+          prioridad: "Alta" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Floyd"],
+          diasRestantes: 5,
+          estado: "porHacer" as const
+        },
+        {
+          id: 2,
+          titulo: "Validar formato XML",
+          descripcion: "Crear módulo de validación para archivos XML según estándares SUNAT",
+          prioridad: "Alta" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Floyd", "https://api.dicebear.com/7.x/avataaars/svg?seed=Ronald"],
+          diasRestantes: 8,
+          estado: "porHacer" as const
+        },
+        {
+          id: 3,
+          titulo: "Integrar con sistema ERP",
+          descripcion: "Desarrollar conectores para extraer datos de ventas del ERP",
+          prioridad: "Alta" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Jane", "https://api.dicebear.com/7.x/avataaars/svg?seed=Floyd"],
+          diasRestantes: 4,
+          estado: "enProgreso" as const
+        },
+        {
+          id: 4,
+          titulo: "Generar PDF de factura",
+          descripcion: "Desarrollar plantilla y lógica para generar PDF de las facturas",
+          prioridad: "Media" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Ronald"],
+          diasRestantes: 6,
+          estado: "enProgreso" as const
+        },
+        {
+          id: 5,
+          titulo: "Firma digital de XML",
+          descripcion: "Implementar proceso de firma electrónica con certificado digital",
+          prioridad: "Baja" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Jane"],
+          diasRestantes: 0,
+          estado: "hecho" as const
+        },
+        {
+          id: 6,
+          titulo: "Diseño de arquitectura",
+          descripcion: "Definir arquitectura del sistema de facturación",
+          prioridad: "Media" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Floyd", "https://api.dicebear.com/7.x/avataaars/svg?seed=Jane"],
+          diasRestantes: 0,
+          estado: "hecho" as const
+        }
+      ],
       miembros: [
         { id: 1, nombre: "Jane Cooper", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jane", rol: "Project Manager" },
         { id: 2, nombre: "Floyd Miles", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Floyd", rol: "Desarrollador RPA" },
@@ -76,6 +146,54 @@ export default function Proyectos({ proyectoIdSeleccionado, onLimpiarSeleccion }
       categoria: "Gestión de Datos",
       tareas: 12,
       tareasCompletadas: 10,
+      linkDocumento: "https://docs.google.com/document/d/1234567890/edit",
+      tareasIniciales: [
+        {
+          id: 7,
+          titulo: "Validar duplicados en CRM",
+          descripcion: "Implementar lógica para detectar registros duplicados antes de insertar",
+          prioridad: "Alta" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Marvin"],
+          diasRestantes: 3,
+          estado: "porHacer" as const
+        },
+        {
+          id: 8,
+          titulo: "Normalizar formatos de datos",
+          descripcion: "Crear reglas de normalización para teléfonos, emails y direcciones",
+          prioridad: "Media" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Jerome"],
+          diasRestantes: 7,
+          estado: "porHacer" as const
+        },
+        {
+          id: 9,
+          titulo: "Conectar con API del CRM",
+          descripcion: "Desarrollar integración con la API REST del CRM corporativo",
+          prioridad: "Alta" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Marvin", "https://api.dicebear.com/7.x/avataaars/svg?seed=Kathryn"],
+          diasRestantes: 5,
+          estado: "enProgreso" as const
+        },
+        {
+          id: 10,
+          titulo: "Validación de campos obligatorios",
+          descripcion: "Implementar validaciones para campos requeridos",
+          prioridad: "Media" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Jerome"],
+          diasRestantes: 0,
+          estado: "hecho" as const
+        },
+        {
+          id: 11,
+          titulo: "Extracción de datos Excel",
+          descripcion: "Desarrollar módulo para leer y procesar archivos Excel",
+          prioridad: "Baja" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Kathryn"],
+          diasRestantes: 0,
+          estado: "hecho" as const
+        }
+      ],
       miembros: [
         { id: 4, nombre: "Marvin McKinney", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Marvin", rol: "Full Stack Developer" },
         { id: 5, nombre: "Jerome Bell", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jerome", rol: "Business Analyst" },
@@ -93,6 +211,44 @@ export default function Proyectos({ proyectoIdSeleccionado, onLimpiarSeleccion }
       categoria: "Finanzas",
       tareas: 18,
       tareasCompletadas: 18,
+      tareasIniciales: [
+        {
+          id: 12,
+          titulo: "Optimización de reportes",
+          descripcion: "Mejorar el rendimiento de la generación de reportes",
+          prioridad: "Baja" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Jacob"],
+          diasRestantes: 2,
+          estado: "porHacer" as const
+        },
+        {
+          id: 13,
+          titulo: "Actualización de sistema contable",
+          descripcion: "Actualizar estados de pago en el sistema contable",
+          prioridad: "Media" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Kristin"],
+          diasRestantes: 1,
+          estado: "enProgreso" as const
+        },
+        {
+          id: 14,
+          titulo: "Descarga de comprobantes bancarios",
+          descripcion: "Automatizar descarga de comprobantes del banco",
+          prioridad: "Alta" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Jacob", "https://api.dicebear.com/7.x/avataaars/svg?seed=Kristin"],
+          diasRestantes: 0,
+          estado: "hecho" as const
+        },
+        {
+          id: 15,
+          titulo: "Conciliación automática",
+          descripcion: "Implementar lógica de conciliación de pagos",
+          prioridad: "Alta" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Jacob"],
+          diasRestantes: 0,
+          estado: "hecho" as const
+        }
+      ],
       miembros: [
         { id: 7, nombre: "Jacob Jones", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jacob", rol: "DevOps Engineer" },
         { id: 8, nombre: "Kristin Watson", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Kristin", rol: "Frontend Developer" }
@@ -109,6 +265,44 @@ export default function Proyectos({ proyectoIdSeleccionado, onLimpiarSeleccion }
       categoria: "Consultas Legales",
       tareas: 20,
       tareasCompletadas: 3,
+      tareasIniciales: [
+        {
+          id: 16,
+          titulo: "Automatizar login en SUNARP",
+          descripcion: "Desarrollar bot para autenticarse en el portal SUNARP",
+          prioridad: "Alta" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Courtney"],
+          diasRestantes: 10,
+          estado: "porHacer" as const
+        },
+        {
+          id: 17,
+          titulo: "Extraer datos de títulos",
+          descripcion: "Implementar scraping de información de títulos archivados",
+          prioridad: "Media" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Theresa"],
+          diasRestantes: 15,
+          estado: "porHacer" as const
+        },
+        {
+          id: 18,
+          titulo: "Consulta de vehículos",
+          descripcion: "Desarrollar módulo de consulta de vehículos registrados",
+          prioridad: "Alta" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Courtney", "https://api.dicebear.com/7.x/avataaars/svg?seed=Theresa"],
+          diasRestantes: 8,
+          estado: "enProgreso" as const
+        },
+        {
+          id: 19,
+          titulo: "Análisis de requisitos",
+          descripcion: "Definir alcance y requisitos del proyecto",
+          prioridad: "Baja" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Theresa"],
+          diasRestantes: 0,
+          estado: "hecho" as const
+        }
+      ],
       miembros: [
         { id: 9, nombre: "Courtney Henry", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Courtney", rol: "Backend Developer" },
         { id: 10, nombre: "Theresa Webb", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Theresa", rol: "QA Tester" }
@@ -125,6 +319,44 @@ export default function Proyectos({ proyectoIdSeleccionado, onLimpiarSeleccion }
       categoria: "Automatización Email",
       tareas: 15,
       tareasCompletadas: 7,
+      tareasIniciales: [
+        {
+          id: 20,
+          titulo: "Clasificación por remitente",
+          descripcion: "Implementar filtros de clasificación por dirección de remitente",
+          prioridad: "Media" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Jane"],
+          diasRestantes: 6,
+          estado: "porHacer" as const
+        },
+        {
+          id: 21,
+          titulo: "Descarga de adjuntos",
+          descripcion: "Automatizar descarga y almacenamiento de archivos adjuntos",
+          prioridad: "Alta" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Ronald", "https://api.dicebear.com/7.x/avataaars/svg?seed=Jerome"],
+          diasRestantes: 4,
+          estado: "enProgreso" as const
+        },
+        {
+          id: 22,
+          titulo: "Monitoreo de bandeja",
+          descripcion: "Configurar monitoreo continuo de bandejas de entrada",
+          prioridad: "Alta" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Jane"],
+          diasRestantes: 3,
+          estado: "enProgreso" as const
+        },
+        {
+          id: 23,
+          titulo: "Conexión con Exchange",
+          descripcion: "Establecer conexión con servidor Exchange corporativo",
+          prioridad: "Media" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Jerome"],
+          diasRestantes: 0,
+          estado: "hecho" as const
+        }
+      ],
       miembros: [
         { id: 1, nombre: "Jane Cooper", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jane", rol: "Project Manager" },
         { id: 3, nombre: "Ronald Richards", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ronald", rol: "QA Tester" },
@@ -142,6 +374,53 @@ export default function Proyectos({ proyectoIdSeleccionado, onLimpiarSeleccion }
       categoria: "Recursos Humanos",
       tareas: 22,
       tareasCompletadas: 7,
+      tareasIniciales: [
+        {
+          id: 24,
+          titulo: "Registro de asistencia",
+          descripcion: "Desarrollar módulo de registro automático de asistencia",
+          prioridad: "Alta" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Floyd"],
+          diasRestantes: 12,
+          estado: "porHacer" as const
+        },
+        {
+          id: 25,
+          titulo: "Cálculo de vacaciones",
+          descripcion: "Implementar algoritmo de cálculo de días de vacaciones",
+          prioridad: "Media" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Marvin"],
+          diasRestantes: 8,
+          estado: "porHacer" as const
+        },
+        {
+          id: 26,
+          titulo: "Análisis de legajos",
+          descripcion: "Automatizar análisis y validación de documentos en legajos",
+          prioridad: "Media" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Kathryn", "https://api.dicebear.com/7.x/avataaars/svg?seed=Kristin"],
+          diasRestantes: 10,
+          estado: "enProgreso" as const
+        },
+        {
+          id: 27,
+          titulo: "Portal de empleados",
+          descripcion: "Configurar acceso al portal de empleados",
+          prioridad: "Baja" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Floyd"],
+          diasRestantes: 0,
+          estado: "hecho" as const
+        },
+        {
+          id: 28,
+          titulo: "Base de datos de empleados",
+          descripcion: "Diseñar y crear base de datos centralizada",
+          prioridad: "Alta" as const,
+          asignados: ["https://api.dicebear.com/7.x/avataaars/svg?seed=Marvin", "https://api.dicebear.com/7.x/avataaars/svg?seed=Kathryn"],
+          diasRestantes: 0,
+          estado: "hecho" as const
+        }
+      ],
       miembros: [
         { id: 2, nombre: "Floyd Miles", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Floyd", rol: "Desarrollador RPA" },
         { id: 4, nombre: "Marvin McKinney", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Marvin", rol: "Full Stack Developer" },
@@ -156,7 +435,7 @@ export default function Proyectos({ proyectoIdSeleccionado, onLimpiarSeleccion }
     if (proyectoIdSeleccionado) {
       const proyecto = proyectos.find(p => p.id === proyectoIdSeleccionado);
       if (proyecto) {
-        abrirKanban(proyecto);
+        abrirVistaPrevia(proyecto);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -167,9 +446,23 @@ export default function Proyectos({ proyectoIdSeleccionado, onLimpiarSeleccion }
     setMostrarModal(true);
   };
 
-  const abrirKanban = (proyecto: Proyecto) => {
+  const abrirVistaPrevia = (proyecto: Proyecto) => {
+    console.log('Abriendo vista previa para:', proyecto.nombre);
     setProyectoSeleccionado(proyecto);
+    setTareasActualizadas(proyecto.tareasIniciales || []);
+    setMostrarVistaPrevia(true);
+  };
+
+  const continuarAKanban = (tareas: TareaInicial[]) => {
+    setTareasActualizadas(tareas);
+    setMostrarVistaPrevia(false);
     setMostrarKanban(true);
+  };
+
+  const cerrarVistaPrevia = () => {
+    setMostrarVistaPrevia(false);
+    setProyectoSeleccionado(null);
+    setTareasActualizadas([]);
   };
 
   const cerrarModal = () => {
@@ -180,6 +473,7 @@ export default function Proyectos({ proyectoIdSeleccionado, onLimpiarSeleccion }
   const cerrarKanban = () => {
     setMostrarKanban(false);
     setProyectoSeleccionado(null);
+    setTareasActualizadas([]);
     // Limpiar la selección del Dashboard
     if (onLimpiarSeleccion) {
       onLimpiarSeleccion();
@@ -210,6 +504,25 @@ export default function Proyectos({ proyectoIdSeleccionado, onLimpiarSeleccion }
     );
     cerrarEditarProyecto();
     setMostrarModal(false);
+    success(`Proyecto "${proyectoEditado.nombre}" actualizado exitosamente`);
+  };
+
+  const abrirEliminarProyecto = (proyecto: Proyecto) => {
+    setProyectoAEliminar(proyecto);
+    setMostrarEliminar(true);
+  };
+
+  const cerrarEliminarProyecto = () => {
+    setMostrarEliminar(false);
+    setProyectoAEliminar(null);
+  };
+
+  const confirmarEliminarProyecto = () => {
+    if (proyectoAEliminar) {
+      setProyectos(prev => prev.filter(p => p.id !== proyectoAEliminar.id));
+      success(`Proyecto "${proyectoAEliminar.nombre}" eliminado exitosamente`);
+      cerrarEliminarProyecto();
+    }
   };
 
   const crearProyecto = (nuevoProyecto: {
@@ -246,11 +559,26 @@ export default function Proyectos({ proyectoIdSeleccionado, onLimpiarSeleccion }
     setProyectoSeleccionado(proyecto);
     setMostrarKanban(true);
     cerrarNuevoProyecto();
+    success(`Proyecto "${nuevoProyecto.nombre}" creado exitosamente`);
   };
 
   return (
     <>
-      {!mostrarKanban ? (
+      {mostrarVistaPrevia && proyectoSeleccionado ? (
+        <VistaProyecto
+          nombreProyecto={proyectoSeleccionado.nombre}
+          linkDocumento={proyectoSeleccionado.linkDocumento}
+          tareasIniciales={proyectoSeleccionado.tareasIniciales}
+          onContinuar={continuarAKanban}
+          onClose={cerrarVistaPrevia}
+        />
+      ) : mostrarKanban && proyectoSeleccionado ? (
+        <TableroKanban
+          nombreProyecto={proyectoSeleccionado.nombre}
+          tareasIniciales={tareasActualizadas.length > 0 ? tareasActualizadas : proyectoSeleccionado.tareasIniciales}
+          onClose={cerrarKanban}
+        />
+      ) : (
         <div className="proyectos-container">
           {/* Header */}
           <div className="proyectos-header">
@@ -310,7 +638,7 @@ export default function Proyectos({ proyectoIdSeleccionado, onLimpiarSeleccion }
           <div 
             key={proyecto.id} 
             className="proyecto-card"
-            onClick={() => abrirKanban(proyecto)}
+            onClick={() => abrirVistaPrevia(proyecto)}
           >
             {/* Nombre del proyecto con badge de estado */}
             <div className="proyecto-header-row">
@@ -395,15 +723,26 @@ export default function Proyectos({ proyectoIdSeleccionado, onLimpiarSeleccion }
                 <span className="miembros-texto">{proyecto.miembros.length} miembros</span>
               </div>
               
-              <button className="btn-ver-mas" onClick={(e) => {
-                e.stopPropagation();
-                abrirDetalleProyecto(proyecto);
-              }}>
-                Ver detalles
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                  <path fillRule="evenodd" d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z" clipRule="evenodd" />
-                </svg>
-              </button>
+              <div className="proyecto-acciones">
+                <button className="btn-ver-mas" onClick={(e) => {
+                  e.stopPropagation();
+                  abrirDetalleProyecto(proyecto);
+                }}>
+                  Ver detalles
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path fillRule="evenodd" d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z" clipRule="evenodd" />
+                  </svg>
+                </button>
+                
+                <button className="btn-eliminar-proyecto" onClick={(e) => {
+                  e.stopPropagation();
+                  abrirEliminarProyecto(proyecto);
+                }} title="Eliminar proyecto">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path fillRule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         ))}
@@ -434,16 +773,64 @@ export default function Proyectos({ proyectoIdSeleccionado, onLimpiarSeleccion }
               onCrear={crearProyecto}
             />
           )}
+
+          {/* Modal de confirmación de eliminación */}
+          {mostrarEliminar && proyectoAEliminar && (
+            <div className="modal-overlay" onClick={cerrarEliminarProyecto}>
+              <div className="modal-eliminar" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-eliminar-header">
+                  <div className="modal-eliminar-icono">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                      <path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <h2 className="modal-eliminar-titulo">¿Eliminar Proyecto?</h2>
+                  <p className="modal-eliminar-descripcion">
+                    Esta acción no se puede deshacer. Se eliminará permanentemente el proyecto:
+                  </p>
+                </div>
+
+                <div className="modal-eliminar-info">
+                  <div className="proyecto-eliminar-detalle">
+                    <div className="detalle-row">
+                      <span className="detalle-label">Proyecto:</span>
+                      <span className="detalle-valor">{proyectoAEliminar.nombre}</span>
+                    </div>
+                    <div className="detalle-row">
+                      <span className="detalle-label">Tareas:</span>
+                      <span className="detalle-valor">{proyectoAEliminar.tareas} tareas</span>
+                    </div>
+                    <div className="detalle-row">
+                      <span className="detalle-label">Estado:</span>
+                      <span className={`detalle-estado ${proyectoAEliminar.estado.toLowerCase().replace(' ', '-')}`}>
+                        {proyectoAEliminar.estado}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="modal-eliminar-footer">
+                  <button className="btn-cancelar-eliminar" onClick={cerrarEliminarProyecto}>
+                    Cancelar
+                  </button>
+                  <button className="btn-confirmar-eliminar" onClick={confirmarEliminarProyecto}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                      <path fillRule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clipRule="evenodd" />
+                    </svg>
+                    Eliminar Proyecto
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      ) : (
-        proyectoSeleccionado && (
-          <TableroKanban
-            nombreProyecto={proyectoSeleccionado.nombre}
-            tareasIniciales={proyectoSeleccionado.tareasIniciales}
-            onClose={cerrarKanban}
-          />
-        )
       )}
+      
+      {/* Contenedor de notificaciones */}
+      <NotificacionesContainer 
+        notificaciones={notificaciones} 
+        onClose={cerrarNotificacion}
+      />
     </>
   );
 }
