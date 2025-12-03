@@ -36,22 +36,44 @@ export default function EditarProyectoModal({ proyecto, onClose, onGuardar }: Ed
   const [categoria, setCategoria] = useState(proyecto.categoria);
   const [estado, setEstado] = useState(proyecto.estado);
   const [progreso, setProgreso] = useState(proyecto.progreso);
-  const [archivo, setArchivo] = useState<File | null>(null);
-  const [nombreArchivo, setNombreArchivo] = useState<string>('');
+  const [linkDocumento, setLinkDocumento] = useState<string>('');
 
-  const handleArchivoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && file.type === 'application/pdf') {
-      setArchivo(file);
-      setNombreArchivo(file.name);
-    } else {
-      alert('Por favor selecciona un archivo PDF válido');
+  /**
+   * Función para convertir URLs a formato embebible sin login
+   */
+  const getEmbedUrl = (url: string): string => {
+    if (!url) return url;
+    
+    // Google Slides: usar modo embed público
+    if (url.includes('presentation/d/')) {
+      const match = url.match(/\/presentation\/d\/([a-zA-Z0-9-_]+)/);
+      if (match && match[1]) {
+        return `https://docs.google.com/presentation/d/${match[1]}/embed?start=false&loop=false&delayms=3000`;
+      }
     }
-  };
-
-  const eliminarArchivo = () => {
-    setArchivo(null);
-    setNombreArchivo('');
+    
+    // Google Docs: usar modo embed
+    if (url.includes('docs.google.com/document')) {
+      const match = url.match(/\/document\/d\/([a-zA-Z0-9-_]+)/);
+      if (match && match[1]) {
+        return `https://docs.google.com/document/d/${match[1]}/preview`;
+      }
+    }
+    
+    // Google Sheets: usar modo embed
+    if (url.includes('sheets.google.com')) {
+      const match = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+      if (match && match[1]) {
+        return `https://docs.google.com/spreadsheets/d/${match[1]}/preview`;
+      }
+    }
+    
+    // OneDrive: agregar parámetro embed
+    if (url.includes('onedrive.live.com') || url.includes('sharepoint.com')) {
+      return url.includes('?') ? `${url}&embed=1` : `${url}?embed=1`;
+    }
+    
+    return url;
   };
 
   const handleGuardar = () => {
@@ -66,10 +88,10 @@ export default function EditarProyectoModal({ proyecto, onClose, onGuardar }: Ed
       progreso
     };
     
-    // Si hay un nuevo archivo, aquí se podría procesar
-    if (archivo) {
-      console.log('Nuevo archivo PDF seleccionado:', archivo.name);
-      // Aquí puedes agregar lógica para subir el archivo o guardarlo
+    // Si hay un nuevo link, aquí se podría procesar
+    if (linkDocumento) {
+      console.log('Nuevo link de documento:', linkDocumento);
+      // Aquí puedes agregar lógica para guardar el link
     }
     
     onGuardar(proyectoActualizado);
@@ -167,40 +189,47 @@ export default function EditarProyectoModal({ proyecto, onClose, onGuardar }: Ed
             />
           </div>
 
-          {/* Upload de Archivo PDF */}
+          {/* Link de Documento Compartido */}
           <div className="form-group-editar">
-            <label>Documento del Proyecto (PDF)</label>
-            <div className="upload-area" onClick={() => document.getElementById('archivo-input-editar')?.click()}>
-              <input
-                id="archivo-input-editar"
-                type="file"
-                accept=".pdf"
-                onChange={handleArchivoChange}
-                style={{ display: 'none' }}
-              />
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-              </svg>
-              <p className="upload-text">
-                {nombreArchivo || 'Haz clic para seleccionar un nuevo archivo PDF'}
+            <label>Link del Documento Compartido</label>
+            <input
+              type="url"
+              value={linkDocumento}
+              onChange={(e) => setLinkDocumento(e.target.value)}
+              placeholder="Pega el link de Google Docs, Slides, Sheets, OneDrive, etc."
+            />
+            <div style={{ marginTop: '0.75rem', padding: '0.75rem', background: '#EFF6FF', borderRadius: '8px', border: '1px solid #BFDBFE' }}>
+              <p style={{ margin: '0', fontSize: '0.75rem', color: '#1E40AF' }}>
+                💡 <strong>Tip:</strong> Asegúrate de que el documento esté compartido como <strong>"Cualquiera con el enlace"</strong> para que la vista previa funcione.
               </p>
-              <p className="upload-hint">o arrastra y suelta aquí</p>
             </div>
-            
-            {nombreArchivo && (
-              <div className="archivo-seleccionado">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                </svg>
-                <span>{nombreArchivo}</span>
-                <button type="button" onClick={eliminarArchivo}>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
+            {linkDocumento && (
+              <p style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: '#10B981', fontWeight: '600' }}>
+                ✅ Link agregado - Verás la vista previa abajo
+              </p>
             )}
           </div>
+
+          {/* Vista previa del documento */}
+          {linkDocumento && (
+            <div className="form-group-editar">
+              <label>Vista Previa del Documento</label>
+              <div style={{ 
+                width: '100%', 
+                height: '400px', 
+                border: '2px solid #E5E7EB', 
+                borderRadius: '12px', 
+                overflow: 'hidden',
+                marginTop: '0.5rem'
+              }}>
+                <iframe
+                  src={getEmbedUrl(linkDocumento)}
+                  style={{ width: '100%', height: '100%', border: 'none' }}
+                  title="Vista previa del documento compartido"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Footer */}

@@ -19,6 +19,7 @@ interface Proyecto {
   tareas: number;
   tareasCompletadas: number;
   categoria: string;
+  linkDocumento?: string;
 }
 
 interface DetalleProyectoModalProps {
@@ -32,6 +33,45 @@ interface DetalleProyectoModalProps {
  * Descripción: Modal con información detallada del proyecto RPA
  */
 export default function DetalleProyectoModal({ proyecto, onClose, onEditar }: DetalleProyectoModalProps) {
+  
+  /**
+   * Función para convertir URLs de Google Docs a formato embebible
+   * Extrae el ID del documento y crea URLs optimizadas para embed sin login
+   */
+  const getEmbedUrl = (url: string): string => {
+    if (!url) return url;
+    
+    // Google Slides: usar modo embed público
+    if (url.includes('presentation/d/')) {
+      const match = url.match(/\/presentation\/d\/([a-zA-Z0-9-_]+)/);
+      if (match && match[1]) {
+        return `https://docs.google.com/presentation/d/${match[1]}/embed?start=false&loop=false&delayms=3000`;
+      }
+    }
+    
+    // Google Docs: usar modo preview con ID
+    if (url.includes('docs.google.com/document')) {
+      const match = url.match(/\/document\/d\/([a-zA-Z0-9-_]+)/);
+      if (match && match[1]) {
+        return `https://docs.google.com/document/d/${match[1]}/preview`;
+      }
+    }
+    
+    // Google Sheets: usar modo preview con ID
+    if (url.includes('sheets.google.com')) {
+      const match = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+      if (match && match[1]) {
+        return `https://docs.google.com/spreadsheets/d/${match[1]}/preview`;
+      }
+    }
+    
+    // OneDrive: agregar parámetro embed=1
+    if (url.includes('onedrive.live.com') || url.includes('sharepoint.com')) {
+      return url.includes('?') ? `${url}&embed=1` : `${url}?embed=1`;
+    }
+    
+    return url;
+  };
   
   return (
     <div className="detalle-modal-overlay" onClick={onClose}>
@@ -117,39 +157,43 @@ export default function DetalleProyectoModal({ proyecto, onClose, onEditar }: De
           </div>
 
           {/* Documento del Proyecto */}
-          <div className="detalle-seccion">
-            <h3 className="seccion-titulo">Documento del Proyecto</h3>
-            <div className="documento-preview-container">
-              <div className="documento-info">
-                <div className="documento-icon">
+          {proyecto.linkDocumento && (
+            <div className="detalle-seccion">
+              <h3 className="seccion-titulo">Documento del Proyecto</h3>
+              <div className="documento-link-container">
+                <div className="link-info">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                    <path fillRule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5H5.625zM7.5 15a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 017.5 15zm.75 2.25a.75.75 0 000 1.5H12a.75.75 0 000-1.5H8.25z" clipRule="evenodd" />
-                    <path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
+                    <path fillRule="evenodd" d="M19.902 4.098a3.75 3.75 0 00-5.304 0l-4.5 4.5a3.75 3.75 0 001.035 6.037.75.75 0 01-.646 1.353 5.25 5.25 0 01-1.449-8.45l4.5-4.5a5.25 5.25 0 117.424 7.424l-1.757 1.757a.75.75 0 11-1.06-1.06l1.757-1.757a3.75 3.75 0 000-5.304zm-7.389 4.267a.75.75 0 011-.353 5.25 5.25 0 011.449 8.45l-4.5 4.5a5.25 5.25 0 11-7.424-7.424l1.757-1.757a.75.75 0 111.06 1.06l-1.757 1.757a3.75 3.75 0 105.304 5.304l4.5-4.5a3.75 3.75 0 00-1.035-6.037.75.75 0 01-.354-1z" clipRule="evenodd" />
                   </svg>
+                  <div className="link-detalles">
+                    <h4 className="link-titulo">Documento Compartido</h4>
+                    <a href={proyecto.linkDocumento} target="_blank" rel="noopener noreferrer" className="link-url">
+                      {proyecto.linkDocumento}
+                    </a>
+                  </div>
+                  <a 
+                    href={proyecto.linkDocumento} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="btn-abrir-link"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M5.25 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM2.25 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM18.75 7.5a.75.75 0 00-1.5 0v2.25H15a.75.75 0 000 1.5h2.25v2.25a.75.75 0 001.5 0v-2.25H21a.75.75 0 000-1.5h-2.25V7.5z" />
+                    </svg>
+                    Abrir en nueva pestaña
+                  </a>
                 </div>
-                <div className="documento-detalles">
-                  <h4 className="documento-nombre">Documento_{proyecto.nombre.replace(/\s+/g, '_')}.pdf</h4>
-                  <p className="documento-meta">PDF • Última modificación: {proyecto.fechaFin}</p>
-                </div>
-                <button className="btn-descargar-pdf">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                    <path fillRule="evenodd" d="M12 2.25a.75.75 0 01.75.75v11.69l3.22-3.22a.75.75 0 111.06 1.06l-4.5 4.5a.75.75 0 01-1.06 0l-4.5-4.5a.75.75 0 111.06-1.06l3.22 3.22V3a.75.75 0 01.75-.75zm-9 13.5a.75.75 0 01.75.75v2.25a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5V16.5a.75.75 0 011.5 0v2.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V16.5a.75.75 0 01.75-.75z" clipRule="evenodd" />
-                  </svg>
-                  Descargar
-                </button>
-              </div>
-              
-              <div className="pdf-preview">
-                <div className="pdf-preview-placeholder">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                  </svg>
-                  <p className="preview-text">Vista previa del documento</p>
-                  <p className="preview-hint">Haz clic en "Descargar" para ver el documento completo</p>
+                
+                <div className="documento-iframe-preview">
+                  <iframe
+                    src={getEmbedUrl(proyecto.linkDocumento)}
+                    title="Vista previa del documento compartido"
+                    className="documento-iframe"
+                  />
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Equipo del proyecto */}
           <div className="detalle-seccion">

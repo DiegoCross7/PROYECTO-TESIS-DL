@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './NuevoProyectoModal.css';
+import { useNotificaciones } from '../hooks/useNotificaciones';
 
 interface TareaInicial {
   id: number;
@@ -18,7 +19,7 @@ interface NuevoProyecto {
   descripcion: string;
   prioridad: string;
   participantes: string[];
-  archivo?: File;
+  linkDocumento?: string;
   tareasIniciales?: TareaInicial[];
 }
 
@@ -28,14 +29,15 @@ interface NuevoProyectoModalProps {
 }
 
 export default function NuevoProyectoModal({ onClose, onCrear }: NuevoProyectoModalProps) {
+  const { warning } = useNotificaciones();
+  
   const [paso, setPaso] = useState(1);
   const [nombre, setNombre] = useState('');
   const [tipo, setTipo] = useState('');
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFinal, setFechaFinal] = useState('');
   const [descripcion, setDescripcion] = useState('');
-  const [archivo, setArchivo] = useState<File | null>(null);
-  const [archivoURL, setArchivoURL] = useState<string>('');
+  const [linkDocumento, setLinkDocumento] = useState('');
   const [tareasIniciales, setTareasIniciales] = useState<TareaInicial[]>([]);
   
   // Estados para agregar nueva tarea
@@ -46,18 +48,48 @@ export default function NuevoProyectoModal({ onClose, onCrear }: NuevoProyectoMo
   const [nuevaTareaDias, setNuevaTareaDias] = useState(1);
   const [nuevaTareaParticipantes, setNuevaTareaParticipantes] = useState<string[]>([]);
 
-  const handleArchivoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setArchivo(file);
-      const url = URL.createObjectURL(file);
-      setArchivoURL(url);
+  /**
+   * Función para convertir URLs de Google Docs a formato embebible sin login
+   */
+  const getEmbedUrl = (url: string): string => {
+    if (!url) return url;
+    
+    // Google Slides: usar modo embed público
+    if (url.includes('presentation/d/')) {
+      // Extraer el ID del documento
+      const match = url.match(/\/presentation\/d\/([a-zA-Z0-9-_]+)/);
+      if (match && match[1]) {
+        return `https://docs.google.com/presentation/d/${match[1]}/embed?start=false&loop=false&delayms=3000`;
+      }
     }
+    
+    // Google Docs: usar modo embed
+    if (url.includes('docs.google.com/document')) {
+      const match = url.match(/\/document\/d\/([a-zA-Z0-9-_]+)/);
+      if (match && match[1]) {
+        return `https://docs.google.com/document/d/${match[1]}/preview`;
+      }
+    }
+    
+    // Google Sheets: usar modo embed
+    if (url.includes('sheets.google.com')) {
+      const match = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+      if (match && match[1]) {
+        return `https://docs.google.com/spreadsheets/d/${match[1]}/preview`;
+      }
+    }
+    
+    // OneDrive: agregar parámetro embed
+    if (url.includes('onedrive.live.com') || url.includes('sharepoint.com')) {
+      return url.includes('?') ? `${url}&embed=1` : `${url}?embed=1`;
+    }
+    
+    return url;
   };
 
   const agregarTarea = () => {
     if (!nuevaTareaTitulo.trim() || !nuevaTareaDesc.trim() || !nuevaTareaPrioridad) {
-      alert('Por favor completa todos los campos de la tarea');
+      warning('Por favor completa todos los campos de la tarea');
       return;
     }
 
@@ -106,7 +138,7 @@ export default function NuevoProyectoModal({ onClose, onCrear }: NuevoProyectoMo
         descripcion,
         prioridad: 'Media',
         participantes: [],
-        archivo: archivo || undefined,
+        linkDocumento: linkDocumento || undefined,
         tareasIniciales
       };
       onCrear(nuevoProyecto);
@@ -183,19 +215,30 @@ export default function NuevoProyectoModal({ onClose, onCrear }: NuevoProyectoMo
                 />
               </div>
 
-              {/* Subir Archivo */}
+              {/* Link de Documento Compartido */}
               <div className="form-group">
-                <label>Subir Archivo (PDF o Word)</label>
+                <label>Link del Documento Compartido</label>
                 <input
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  onChange={handleArchivoChange}
+                  type="url"
+                  value={linkDocumento}
+                  onChange={(e) => setLinkDocumento(e.target.value)}
+                  placeholder="Pega el link de Google Docs, Slides, Sheets, OneDrive, etc."
                   className="form-input"
-                  style={{ padding: '0.75rem' }}
                 />
-                {archivo && (
-                  <p style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: '#6B7280' }}>
-                    📄 {archivo.name}
+                <div style={{ marginTop: '0.75rem', padding: '0.75rem', background: '#EFF6FF', borderRadius: '8px', border: '1px solid #BFDBFE' }}>
+                  <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.8rem', color: '#1E40AF', fontWeight: '600' }}>
+                    💡 <strong>Importante:</strong> Para que la vista previa funcione:
+                  </p>
+                  <ol style={{ margin: '0', paddingLeft: '1.25rem', fontSize: '0.75rem', color: '#1E3A8A', lineHeight: '1.6' }}>
+                    <li>Abre tu documento en Google (Docs/Slides/Sheets)</li>
+                    <li>Haz clic en <strong>"Compartir"</strong></li>
+                    <li>Cambia a <strong>"Cualquiera con el enlace"</strong></li>
+                    <li>Copia el link y pégalo aquí</li>
+                  </ol>
+                </div>
+                {linkDocumento && (
+                  <p style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: '#10B981', fontWeight: '600' }}>
+                    ✅ Link agregado - Verás la vista previa en el siguiente paso
                   </p>
                 )}
               </div>
@@ -206,20 +249,20 @@ export default function NuevoProyectoModal({ onClose, onCrear }: NuevoProyectoMo
             <div className="paso2-container">
               {/* Lado izquierdo: Vista previa */}
               <div className="preview-section">
-                <h3 className="preview-titulo">Vista Previa del Archivo</h3>
-                {archivoURL ? (
+                <h3 className="preview-titulo">Vista Previa del Documento</h3>
+                {linkDocumento ? (
                   <iframe
-                    src={archivoURL}
+                    src={getEmbedUrl(linkDocumento)}
                     className="preview-iframe"
-                    title="Vista previa del archivo"
+                    title="Vista previa del documento compartido"
                   />
                 ) : (
                   <div className="preview-vacio">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
                     </svg>
-                    <p>No hay archivo para previsualizar</p>
-                    <p style={{ fontSize: '0.875rem', color: '#9CA3AF' }}>Sube un archivo en el paso anterior</p>
+                    <p>No hay documento para previsualizar</p>
+                    <p style={{ fontSize: '0.875rem', color: '#9CA3AF' }}>Agrega un link en el paso anterior</p>
                   </div>
                 )}
               </div>
