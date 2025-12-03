@@ -4,13 +4,12 @@
 
 .kanban-container {
   width: 100%;
-  height: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   padding: 0;
   background: transparent;
   overflow: hidden;
-  gap: 2rem;
 }
 
 /* Proyecto */
@@ -18,11 +17,13 @@
   display: flex;
   align-items: center;
   gap: 2rem;
-  padding: 1.5rem 2rem;
+  padding: 1.25rem 2rem;
   background: white;
   border-radius: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   border: 1px solid #F3F4F6;
+  flex-shrink: 0;
+  margin-bottom: 1.5rem;
 }
 
 .kanban-proyecto-nombre {
@@ -195,7 +196,6 @@
   overflow: hidden;
   padding: 0;
   min-height: 0;
-  height: 100%;
 }
 
 .kanban-column {
@@ -206,7 +206,7 @@
   border-radius: 16px;
   padding: 1.25rem;
   min-height: 0;
-  max-height: 100%;
+  overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   overflow: hidden;
@@ -584,6 +584,300 @@
   box-shadow: 0 6px 20px rgba(212, 51, 113, 0.35);
 }
 
+/* ============================================
+   DROPDOWN DE FILTROS
+   ============================================ */
+.filtro-container {
+  position: relative;
+}
+
+.btn-filtro.active,
+.btn-hoy.active {
+  background: linear-gradient(135deg, rgba(212, 51, 113, 0.1), rgba(147, 51, 234, 0.1));
+  border-color: #d43371;
+  color: #d43371;
+}
+
+.filtro-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 0.5rem;
+  min-width: 220px;
+  z-index: 1000;
+  animation: fadeInDown 0.2s ease;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.filtro-dropdown button {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  text-align: left;
+  font-size: 0.875rem;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filtro-dropdown button:hover {
+  background: #F9FAFB;
+}
+
+.filtro-dropdown button.active {
+  background: linear-gradient(135deg, rgba(212, 51, 113, 0.1), rgba(147, 51, 234, 0.1));
+  color: #d43371;
+  font-weight: 600;
+}
+
+.prioridad-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.prioridad-dot.alta {
+  background: #EF4444;
+}
+
+.prioridad-dot.media {
+  background: #F59E0B;
+}
+
+.prioridad-dot.baja {
+  background: #10B981;
+}
+
+/* ============================================
+   MODAL INVITAR MIEMBROS
+   ============================================ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-invitar {
+  background: white;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #d43371, #9333EA);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.btn-close {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: none;
+  background: #F3F4F6;
+  color: #6B7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn-close svg {
+  width: 24px;
+  height: 24px;
+}
+
+.btn-close:hover {
+  background: #E5E7EB;
+  color: #1a1a1a;
+}
+
+.modal-body {
+  padding: 2rem;
+}
+
+.modal-description {
+  margin: 0 0 1.5rem 0;
+  color: #6B7280;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.input-group {
+  margin-bottom: 1.5rem;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #E5E7EB;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #d43371;
+  box-shadow: 0 0 0 3px rgba(212, 51, 113, 0.1);
+}
+
+.miembros-actuales {
+  margin-top: 2rem;
+}
+
+.miembros-actuales h4 {
+  margin: 0 0 1rem 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6B7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.miembros-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.miembro-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+
+.miembro-item:hover {
+  background: white;
+  border-color: #d43371;
+}
+
+.miembro-item img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.miembro-item span {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  border-top: 1px solid #E5E7EB;
+}
+
+.btn-cancelar {
+  flex: 1;
+  padding: 0.875rem 1.5rem;
+  background: #F3F4F6;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #6B7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cancelar:hover {
+  background: #E5E7EB;
+}
+
+.btn-enviar-invitacion {
+  flex: 2;
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, #d43371, #9333EA);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(212, 51, 113, 0.25);
+}
+
+.btn-enviar-invitacion svg {
+  width: 18px;
+  height: 18px;
+}
+
+.btn-enviar-invitacion:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 51, 113, 0.35);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 @media (max-width: 1200px) {
   .kanban-columns {
     grid-template-columns: 1fr;
@@ -610,5 +904,168 @@
     bottom: 1rem;
     right: 1rem;
     padding: 0.5rem 1.5rem;
+  }
+}
+
+/* ============================================
+   MODAL DE ELIMINACIÓN DE TAREA
+   ============================================ */
+.modal-eliminar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-eliminar {
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.modal-eliminar-header {
+  padding: 2rem 2rem 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.warning-icon-circle {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FEE2E2, #FECACA);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #EF4444;
+}
+
+.warning-icon-circle svg {
+  width: 36px;
+  height: 36px;
+}
+
+.modal-eliminar-header h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.75rem;
+}
+
+.modal-eliminar-header p {
+  font-size: 0.95rem;
+  color: #6B7280;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.tarea-eliminar-detalle {
+  padding: 1.5rem 2rem;
+  background: #F9FAFB;
+}
+
+.tarea-info-eliminar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+}
+
+.label-tarea {
+  font-size: 0.9rem;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.nombre-tarea {
+  font-size: 0.95rem;
+  color: #111827;
+  font-weight: 600;
+}
+
+.modal-eliminar-footer {
+  padding: 1.5rem 2rem;
+  display: flex;
+  gap: 1rem;
+  border-top: 1px solid #F3F4F6;
+}
+
+.btn-cancelar-eliminar {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  background: #F3F4F6;
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cancelar-eliminar:hover {
+  background: #E5E7EB;
+}
+
+.btn-confirmar-eliminar {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #EF4444, #DC2626);
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-confirmar-eliminar svg {
+  width: 18px;
+  height: 18px;
+}
+
+.btn-confirmar-eliminar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

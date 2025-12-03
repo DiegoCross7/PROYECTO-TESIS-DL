@@ -4,6 +4,8 @@ import NuevaTareaModal from './NuevaTareaModal';
 import VerTareaModal from './VerTareaModal';
 import EditarTareaModal from './EditarTareaModal';
 import AnalyticsModal from './AnalyticsModal';
+import { NotificacionesContainer } from './Notificacion';
+import { useNotificaciones } from '../hooks/useNotificaciones';
 
 interface Tarea {
   id: number;
@@ -12,6 +14,7 @@ interface Tarea {
   prioridad: 'Alta' | 'Media' | 'Baja';
   asignados: string[];
   diasRestantes: number;
+  estado?: 'porHacer' | 'enProgreso' | 'hecho';
 }
 
 interface TableroKanbanProps {
@@ -25,64 +28,99 @@ export default function TableroKanban({ nombreProyecto, tareasIniciales = [], on
   const [mostrarModalVer, setMostrarModalVer] = useState(false);
   const [mostrarModalEditar, setMostrarModalEditar] = useState(false);
   const [mostrarAnalytics, setMostrarAnalytics] = useState(false);
+  const [mostrarInvitar, setMostrarInvitar] = useState(false);
+  const [mostrarFiltros, setMostrarFiltros] = useState(false);
+  const [mostrarEliminarTarea, setMostrarEliminarTarea] = useState(false);
+  const [tareaAEliminar, setTareaAEliminar] = useState<{ id: number; titulo: string } | null>(null);
   const [tareaSeleccionada, setTareaSeleccionada] = useState<Tarea | null>(null);
   const [columnaSeleccionada, setColumnaSeleccionada] = useState<'porHacer' | 'enProgreso' | 'hecho'>('porHacer');
   const [menuAbierto, setMenuAbierto] = useState<number | null>(null);
+  const [filtroActivo, setFiltroActivo] = useState<'todas' | 'hoy' | 'alta' | 'media' | 'baja'>('todas');
+  const [emailInvitar, setEmailInvitar] = useState('');
+  
+  // Sistema de notificaciones
+  const { notificaciones, cerrarNotificacion, success, info } = useNotificaciones();
+  
+  // Distribuir tareas iniciales por columnas según su estado
+  const distribuirTareas = () => {
+    if (tareasIniciales.length > 0) {
+      return {
+        porHacer: tareasIniciales.filter(t => !t.estado || t.estado === 'porHacer'),
+        enProgreso: tareasIniciales.filter(t => t.estado === 'enProgreso'),
+        hecho: tareasIniciales.filter(t => t.estado === 'hecho')
+      };
+    }
+    // Tareas de ejemplo si no hay tareas iniciales
+    return {
+      porHacer: [
+        {
+          id: 1,
+          titulo: 'Generación automática de facturas',
+          descripcion: 'Lee ventas desde Excel o ERP y genera las facturas electrónicas en XML y PDF según los estándares de la SUNAT.',
+          prioridad: 'Baja' as const,
+          asignados: ['https://api.dicebear.com/7.x/avataaars/svg?seed=Jane', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Floyd', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ronald'],
+          diasRestantes: 12
+        },
+        {
+          id: 2,
+          titulo: 'Envío y validación con la SUNAT',
+          descripcion: 'Conecta con los servicios web de la SUNAT para validar/registrar la factura y envía el archivo XML al portal correspondiente.',
+          prioridad: 'Baja' as const,
+          asignados: ['https://api.dicebear.com/7.x/avataaars/svg?seed=Marvin', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jerome'],
+          diasRestantes: 9
+        }
+      ],
+      enProgreso: [
+        {
+          id: 3,
+          titulo: 'Integración con ERP / extracción de datos',
+          descripcion: 'Desarrolla conectores que transforman los datos de ventas a la estructura que necesita el bot (absoluto, sin procesar).',
+          prioridad: 'Baja' as const,
+          asignados: ['https://api.dicebear.com/7.x/avataaars/svg?seed=Kathryn', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jacob'],
+          diasRestantes: 9
+        },
+        {
+          id: 4,
+          titulo: 'Plantilla PDF y conversión de XML a PDF',
+          descripcion: 'Diseña la plantilla visual de la factura y automatiza la generación del PDF a partir de XML o datos.',
+          prioridad: 'Baja' as const,
+          asignados: ['https://api.dicebear.com/7.x/avataaars/svg?seed=Kristin', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Courtney'],
+          diasRestantes: 9
+        }
+      ],
+      hecho: [
+        {
+          id: 5,
+          titulo: 'Firma electrónica y cifrado de XML',
+          descripcion: 'Implementa el proceso con que firman digitalmente el XML, aseguran la integridad y lo rellena con el certificado requerido por SUNAT.',
+          prioridad: 'Baja' as const,
+          asignados: ['https://api.dicebear.com/7.x/avataaars/svg?seed=Theresa', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jane'],
+          diasRestantes: 9
+        }
+      ]
+    };
+  };
   
   const [tareas, setTareas] = useState<{
     porHacer: Tarea[];
     enProgreso: Tarea[];
     hecho: Tarea[];
-  }>({
-    porHacer: tareasIniciales.length > 0 ? tareasIniciales : [
-      {
-        id: 1,
-        titulo: 'Generación automática de facturas',
-        descripcion: 'Lee ventas desde Excel o ERP y genera las facturas electrónicas en XML y PDF según los estándares de la SUNAT.',
-        prioridad: 'Baja' as const,
-        asignados: ['https://api.dicebear.com/7.x/avataaars/svg?seed=Jane', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Floyd', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ronald'],
-        diasRestantes: 12
-      },
-      {
-        id: 2,
-        titulo: 'Envío y validación con la SUNAT',
-        descripcion: 'Conecta con los servicios web de la SUNAT para validar/registrar la factura y envía el archivo XML al portal correspondiente.',
-        prioridad: 'Baja' as const,
-        asignados: ['https://api.dicebear.com/7.x/avataaars/svg?seed=Marvin', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jerome'],
-        diasRestantes: 9
-      }
-    ],
-    enProgreso: tareasIniciales.length > 0 ? [] : [
-      {
-        id: 3,
-        titulo: 'Integración con ERP / extracción de datos',
-        descripcion: 'Desarrolla conectores que transforman los datos de ventas a la estructura que necesita el bot (absoluto, sin procesar).',
-        prioridad: 'Baja' as const,
-        asignados: ['https://api.dicebear.com/7.x/avataaars/svg?seed=Kathryn', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jacob'],
-        diasRestantes: 9
-      },
-      {
-        id: 4,
-        titulo: 'Plantilla PDF y conversión de XML a PDF',
-        descripcion: 'Diseña la plantilla visual de la factura y automatiza la generación del PDF a partir de XML o datos.',
-        prioridad: 'Baja' as const,
-        asignados: ['https://api.dicebear.com/7.x/avataaars/svg?seed=Kristin', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Courtney'],
-        diasRestantes: 9
-      }
-    ],
-    hecho: tareasIniciales.length > 0 ? [] : [
-      {
-        id: 5,
-        titulo: 'Firma electrónica y cifrado de XML',
-        descripcion: 'Implementa el proceso con que firman digitalmente el XML, aseguran la integridad y lo rellena con el certificado requerido por SUNAT.',
-        prioridad: 'Baja' as const,
-        asignados: ['https://api.dicebear.com/7.x/avataaars/svg?seed=Theresa', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jane'],
-        diasRestantes: 9
-      }
-    ]
-  });
+  }>(distribuirTareas());
 
   const [draggedTask, setDraggedTask] = useState<{ task: Tarea; fromColumn: string } | null>(null);
+
+  // Fecha actual para comparación
+  const hoy = new Date();
+  const fechaHoyStr = hoy.toLocaleDateString('es-PE');
+
+  // Filtrar tareas según filtro activo
+  const filtrarTareas = (listaTareas: Tarea[]) => {
+    if (filtroActivo === 'todas') return listaTareas;
+    if (filtroActivo === 'hoy') {
+      return listaTareas.filter(t => t.diasRestantes <= 1);
+    }
+    return listaTareas.filter(t => t.prioridad === filtroActivo.charAt(0).toUpperCase() + filtroActivo.slice(1) as 'Alta' | 'Media' | 'Baja');
+  };
 
   const handleDragStart = (task: Tarea, fromColumn: string) => {
     setDraggedTask({ task, fromColumn });
@@ -115,6 +153,10 @@ export default function TableroKanban({ nombreProyecto, tareasIniciales = [], on
     });
 
     setDraggedTask(null);
+    
+    // Notificación al mover tarea
+    const nombreColumna = toColumn === 'porHacer' ? 'Por Hacer' : toColumn === 'enProgreso' ? 'En Progreso' : 'Hecho';
+    info(`Tarea "${task.titulo}" movida a ${nombreColumna}`);
   };
 
   const abrirModalTarea = (columna: 'porHacer' | 'enProgreso' | 'hecho') => {
@@ -138,6 +180,7 @@ export default function TableroKanban({ nombreProyecto, tareasIniciales = [], on
     }));
 
     setMostrarModalTarea(false);
+    success(`Tarea "${nuevaTarea.titulo}" creada exitosamente`);
   };
 
   const verTarea = (tarea: Tarea) => {
@@ -170,22 +213,46 @@ export default function TableroKanban({ nombreProyecto, tareasIniciales = [], on
 
     setMostrarModalEditar(false);
     setTareaSeleccionada(null);
+    success(`Tarea "${tareaEditada.titulo}" actualizada exitosamente`);
   };
 
-  const eliminarTarea = (tareaId: number) => {
-    if (confirm('¿Estás seguro de que deseas eliminar esta tarea?')) {
+  const abrirEliminarTarea = (tareaId: number) => {
+    // Buscar el nombre de la tarea
+    for (const columna of ['porHacer', 'enProgreso', 'hecho'] as const) {
+      const tarea = tareas[columna].find(t => t.id === tareaId);
+      if (tarea) {
+        setTareaAEliminar({ id: tareaId, titulo: tarea.titulo });
+        setMostrarEliminarTarea(true);
+        break;
+      }
+    }
+  };
+
+  const cerrarEliminarTarea = () => {
+    setMostrarEliminarTarea(false);
+    setTareaAEliminar(null);
+  };
+
+  const confirmarEliminarTarea = () => {
+    if (tareaAEliminar) {
       setTareas(prev => {
         const nuevasTareas = { ...prev };
         
         // Buscar en qué columna está la tarea y eliminarla
         for (const columna of ['porHacer', 'enProgreso', 'hecho'] as const) {
-          nuevasTareas[columna] = nuevasTareas[columna].filter(t => t.id !== tareaId);
+          nuevasTareas[columna] = nuevasTareas[columna].filter(t => t.id !== tareaAEliminar.id);
         }
         
         return nuevasTareas;
       });
       setMenuAbierto(null);
+      success(`Tarea "${tareaAEliminar.titulo}" eliminada exitosamente`);
+      cerrarEliminarTarea();
     }
+  };
+
+  const eliminarTarea = (tareaId: number) => {
+    abrirEliminarTarea(tareaId);
   };
 
   const toggleMenu = (tareaId: number) => {
@@ -198,21 +265,39 @@ export default function TableroKanban({ nombreProyecto, tareasIniciales = [], on
       <div className="kanban-proyecto">
           <h1 className="kanban-proyecto-nombre">{nombreProyecto}</h1>
           <div className="kanban-filtros">
-            <button className="btn-filtro">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                <path fillRule="evenodd" d="M3.792 2.938A49.069 49.069 0 0112 2.25c2.797 0 5.54.236 8.209.688a1.857 1.857 0 011.541 1.836v1.044a3 3 0 01-.879 2.121l-6.182 6.182a1.5 1.5 0 00-.439 1.061v2.927a3 3 0 01-1.658 2.684l-1.757.878A.75.75 0 019.75 21v-5.818a1.5 1.5 0 00-.44-1.06L3.13 7.938a3 3 0 01-.879-2.121V4.774c0-.897.64-1.683 1.542-1.836z" clipRule="evenodd" />
-              </svg>
-              Filtrar
-            </button>
-            <button className="btn-hoy">
+            <div className="filtro-container">
+              <button className={`btn-filtro ${mostrarFiltros ? 'active' : ''}`} onClick={() => setMostrarFiltros(!mostrarFiltros)}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path fillRule="evenodd" d="M3.792 2.938A49.069 49.069 0 0112 2.25c2.797 0 5.54.236 8.209.688a1.857 1.857 0 011.541 1.836v1.044a3 3 0 01-.879 2.121l-6.182 6.182a1.5 1.5 0 00-.439 1.061v2.927a3 3 0 01-1.658 2.684l-1.757.878A.75.75 0 019.75 21v-5.818a1.5 1.5 0 00-.44-1.06L3.13 7.938a3 3 0 01-.879-2.121V4.774c0-.897.64-1.683 1.542-1.836z" clipRule="evenodd" />
+                </svg>
+                Filtrar
+              </button>
+              {mostrarFiltros && (
+                <div className="filtro-dropdown">
+                  <button onClick={() => { setFiltroActivo('todas'); setMostrarFiltros(false); }} className={filtroActivo === 'todas' ? 'active' : ''}>
+                    Todas las tareas
+                  </button>
+                  <button onClick={() => { setFiltroActivo('alta'); setMostrarFiltros(false); }} className={filtroActivo === 'alta' ? 'active' : ''}>
+                    <span className="prioridad-dot alta"></span> Prioridad Alta
+                  </button>
+                  <button onClick={() => { setFiltroActivo('media'); setMostrarFiltros(false); }} className={filtroActivo === 'media' ? 'active' : ''}>
+                    <span className="prioridad-dot media"></span> Prioridad Media
+                  </button>
+                  <button onClick={() => { setFiltroActivo('baja'); setMostrarFiltros(false); }} className={filtroActivo === 'baja' ? 'active' : ''}>
+                    <span className="prioridad-dot baja"></span> Prioridad Baja
+                  </button>
+                </div>
+              )}
+            </div>
+            <button className={`btn-hoy ${filtroActivo === 'hoy' ? 'active' : ''}`} onClick={() => setFiltroActivo(filtroActivo === 'hoy' ? 'todas' : 'hoy')}>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12.75 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM7.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM8.25 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM9.75 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM10.5 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM12.75 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM14.25 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM15 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM16.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM15 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM16.5 13.5a.75.75 0 100-1.5.75.75 0 000 1.5z" />
                 <path fillRule="evenodd" d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z" clipRule="evenodd" />
               </svg>
-              Hoy
+              Hoy {filtroActivo === 'hoy' && `(${fechaHoyStr})`}
             </button>
           </div>
-          <button className="btn-invitar">
+          <button className="btn-invitar" onClick={() => setMostrarInvitar(true)}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
               <path d="M5.25 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM2.25 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM18.75 7.5a.75.75 0 00-1.5 0v2.25H15a.75.75 0 000 1.5h2.25v2.25a.75.75 0 001.5 0v-2.25H21a.75.75 0 000-1.5h-2.25V7.5z" />
             </svg>
@@ -253,7 +338,7 @@ export default function TableroKanban({ nombreProyecto, tareasIniciales = [], on
               <button className="btn-add-task" onClick={() => abrirModalTarea('porHacer')}>+</button>
             </div>
             <div className="column-tasks">
-              {tareas.porHacer.map(tarea => (
+              {filtrarTareas(tareas.porHacer).map(tarea => (
                 <div
                   key={tarea.id}
                   className="task-card"
@@ -323,7 +408,7 @@ export default function TableroKanban({ nombreProyecto, tareasIniciales = [], on
               <button className="btn-add-task" onClick={() => abrirModalTarea('enProgreso')}>+</button>
             </div>
             <div className="column-tasks">
-              {tareas.enProgreso.map(tarea => (
+              {filtrarTareas(tareas.enProgreso).map(tarea => (
                 <div
                   key={tarea.id}
                   className="task-card"
@@ -393,7 +478,7 @@ export default function TableroKanban({ nombreProyecto, tareasIniciales = [], on
               <button className="btn-add-task" onClick={() => abrirModalTarea('hecho')}>+</button>
             </div>
             <div className="column-tasks">
-              {tareas.hecho.map(tarea => (
+              {filtrarTareas(tareas.hecho).map(tarea => (
                 <div
                   key={tarea.id}
                   className="task-card"
@@ -489,14 +574,14 @@ export default function TableroKanban({ nombreProyecto, tareasIniciales = [], on
             tareas={{
               porHacer: tareas.porHacer.map(t => ({
                 ...t,
-                asignado: t.asignados[0] || '',
+                asignado: 'Usuario',
                 avatar: t.asignados[0] || '',
                 fechaCreacion: new Date().toISOString().split('T')[0],
                 etiquetas: []
               })),
               enProgreso: tareas.enProgreso.map(t => ({
                 ...t,
-                asignado: t.asignados[0] || '',
+                asignado: 'Usuario',
                 avatar: t.asignados[0] || '',
                 fechaCreacion: new Date().toISOString().split('T')[0],
                 etiquetas: []
@@ -504,7 +589,7 @@ export default function TableroKanban({ nombreProyecto, tareasIniciales = [], on
               revision: [],
               completado: tareas.hecho.map(t => ({
                 ...t,
-                asignado: t.asignados[0] || '',
+                asignado: 'Usuario',
                 avatar: t.asignados[0] || '',
                 fechaCreacion: new Date().toISOString().split('T')[0],
                 etiquetas: []
@@ -513,6 +598,115 @@ export default function TableroKanban({ nombreProyecto, tareasIniciales = [], on
             nombreProyecto={nombreProyecto}
           />
         )}
+
+        {/* Modal Invitar Miembros */}
+        {mostrarInvitar && (
+          <div className="modal-overlay" onClick={() => setMostrarInvitar(false)}>
+            <div className="modal-invitar" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h3>Invitar Miembros al Proyecto</h3>
+                <button className="btn-close" onClick={() => setMostrarInvitar(false)}>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path fillRule="evenodd" d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+              <div className="modal-body">
+                <p className="modal-description">Ingresa el correo electrónico de la persona que deseas invitar al proyecto <strong>{nombreProyecto}</strong></p>
+                <div className="input-group">
+                  <label htmlFor="email-invitar">Correo Electrónico</label>
+                  <input
+                    type="email"
+                    id="email-invitar"
+                    placeholder="ejemplo@correo.com"
+                    value={emailInvitar}
+                    onChange={(e) => setEmailInvitar(e.target.value)}
+                  />
+                </div>
+                <div className="miembros-actuales">
+                  <h4>Miembros Actuales</h4>
+                  <div className="miembros-list">
+                    <div className="miembro-item">
+                      <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=User1" alt="User" />
+                      <span>Usuario 1</span>
+                    </div>
+                    <div className="miembro-item">
+                      <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=User2" alt="User" />
+                      <span>Usuario 2</span>
+                    </div>
+                    <div className="miembro-item">
+                      <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=User3" alt="User" />
+                      <span>Usuario 3</span>
+                    </div>
+                    <div className="miembro-item">
+                      <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=User4" alt="User" />
+                      <span>Usuario 4</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button className="btn-cancelar" onClick={() => setMostrarInvitar(false)}>
+                  Cancelar
+                </button>
+                <button className="btn-enviar-invitacion" onClick={() => {
+                  if (emailInvitar) {
+                    success(`Invitación enviada a ${emailInvitar}`);
+                    setEmailInvitar('');
+                    setMostrarInvitar(false);
+                  }
+                }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
+                  </svg>
+                  Enviar Invitación
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+      {/* Modal de confirmación para eliminar tarea */}
+      {mostrarEliminarTarea && tareaAEliminar && (
+        <div className="modal-eliminar-overlay" onClick={cerrarEliminarTarea}>
+          <div className="modal-eliminar" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-eliminar-header">
+              <div className="warning-icon-circle">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <h3>¿Eliminar tarea?</h3>
+              <p>Esta acción no se puede deshacer</p>
+            </div>
+
+            <div className="tarea-eliminar-detalle">
+              <div className="tarea-info-eliminar">
+                <span className="label-tarea">Tarea:</span>
+                <span className="nombre-tarea">{tareaAEliminar.titulo}</span>
+              </div>
+            </div>
+
+            <div className="modal-eliminar-footer">
+              <button className="btn-cancelar-eliminar" onClick={cerrarEliminarTarea}>
+                Cancelar
+              </button>
+              <button className="btn-confirmar-eliminar" onClick={confirmarEliminarTarea}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path fillRule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clipRule="evenodd" />
+                </svg>
+                Eliminar Tarea
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Contenedor de notificaciones */}
+      <NotificacionesContainer 
+        notificaciones={notificaciones} 
+        onClose={cerrarNotificacion}
+      />
     </div>
   );
 }
