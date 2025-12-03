@@ -89,32 +89,60 @@ export default function AnalyticsModal({ onClose, tareas, nombreProyecto }: Anal
     return Array.from(miembrosMap.values()).sort((a, b) => b.total - a.total);
   }, [tareas, todasLasTareas]);
 
-  // Análisis de tiempo (tareas próximas a vencer)
+  // Análisis de tiempo (tareas próximas a vencer y métricas temporales)
   const analisisTiempo = useMemo(() => {
     const hoy = new Date();
-    const tareasConFecha = todasLasTareas.filter(t => t.fechaLimite && !tareas.completado.includes(t));
+    const tareasConFecha = todasLasTareas.filter(t => t.fechaLimite);
     
+    // Tareas vencidas (no completadas y fecha pasada)
     const vencidas = tareasConFecha.filter(t => {
+      if (tareas.completado.includes(t)) return false;
       const fecha = new Date(t.fechaLimite!.split('/').reverse().join('-'));
       return fecha < hoy;
     });
 
+    // Tareas próximas a vencer (7 días o menos)
     const proximas = tareasConFecha.filter(t => {
+      if (tareas.completado.includes(t)) return false;
       const fecha = new Date(t.fechaLimite!.split('/').reverse().join('-'));
       const diasRestantes = Math.ceil((fecha.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
       return diasRestantes >= 0 && diasRestantes <= 7;
     });
 
-    return { vencidas, proximas };
-  }, [tareas, todasLasTareas]);
+    // Tareas completadas a tiempo
+    const completadasATiempo = tareas.completado.filter(t => {
+      if (!t.fechaLimite) return true;
+      const fechaLimite = new Date(t.fechaLimite.split('/').reverse().join('-'));
+      return fechaLimite >= hoy;
+    }).length;
 
-  // Productividad por etapa
-  const productividad = [
-    { etapa: 'Por hacer', cantidad: tareas.porHacer.length, porcentaje: totalTareas > 0 ? (tareas.porHacer.length / totalTareas) * 100 : 0, color: '#EF4444' },
-    { etapa: 'En progreso', cantidad: tareas.enProgreso.length, porcentaje: totalTareas > 0 ? (tareas.enProgreso.length / totalTareas) * 100 : 0, color: '#F59E0B' },
-    { etapa: 'En revisión', cantidad: tareas.revision.length, porcentaje: totalTareas > 0 ? (tareas.revision.length / totalTareas) * 100 : 0, color: '#3B82F6' },
-    { etapa: 'Completado', cantidad: tareas.completado.length, porcentaje: totalTareas > 0 ? (tareas.completado.length / totalTareas) * 100 : 0, color: '#10B981' }
-  ];
+    // Tiempo promedio de completación por prioridad
+    const tiempoPorPrioridad = {
+      Alta: tareas.completado.filter(t => t.prioridad === 'Alta').length,
+      Media: tareas.completado.filter(t => t.prioridad === 'Media').length,
+      Baja: tareas.completado.filter(t => t.prioridad === 'Baja').length
+    };
+
+    // Progreso semanal (simulado - en producción vendría del backend)
+    const progresoSemanal = [
+      { dia: 'Lun', completadas: 3 },
+      { dia: 'Mar', completadas: 5 },
+      { dia: 'Mié', completadas: 4 },
+      { dia: 'Jue', completadas: 6 },
+      { dia: 'Vie', completadas: 7 },
+      { dia: 'Sáb', completadas: 2 },
+      { dia: 'Dom', completadas: 1 }
+    ];
+
+    return { 
+      vencidas, 
+      proximas, 
+      completadasATiempo,
+      tiempoPorPrioridad,
+      progresoSemanal,
+      tasaCumplimiento: tareasCompletadas > 0 ? Math.round((completadasATiempo / tareasCompletadas) * 100) : 0
+    };
+  }, [tareas, todasLasTareas, tareasCompletadas]);
 
   // Etiquetas más usadas
   const etiquetasPopulares = useMemo(() => {
@@ -446,114 +474,190 @@ export default function AnalyticsModal({ onClose, tareas, nombreProyecto }: Anal
             </div>
           )}
 
-          {/* Vista de Productividad/Tiempo */}
+          {/* Vista de Tiempo - Mejorada */}
           {vistaActual === 'tiempo' && (
             <div className="analytics-content">
-              <h3 className="chart-title">Flujo de Trabajo por Etapa</h3>
-              <div className="workflow-chart">
-                {productividad.map((item, index) => (
-                  <div key={index} className="workflow-item">
-                    <div className="workflow-header">
-                      <span className="workflow-stage">{item.etapa}</span>
-                      <span className="workflow-count">{item.cantidad} tareas</span>
-                    </div>
-                    <div className="workflow-bar-wrapper">
-                      <div 
-                        className={`workflow-bar stage-${index}`}
-                        style={{ 
-                          width: `${item.porcentaje}%`,
-                          background: item.color
-                        }}
-                      >
-                        <span className="workflow-percent">{Math.round(item.porcentaje)}%</span>
-                      </div>
-                    </div>
+              {/* Métricas de Tiempo */}
+              <div className="time-metrics-grid">
+                <div className="time-metric-card vencidas">
+                  <div className="metric-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                      <path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" />
+                    </svg>
                   </div>
-                ))}
-              </div>
-
-              {/* Alertas de Tiempo */}
-              <div className="time-alerts">
-                <h3 className="chart-title">Alertas de Tiempo</h3>
-                
-                {analisisTiempo.vencidas.length > 0 && (
-                  <div className="alert-box vencidas">
-                    <div className="alert-header">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" />
-                      </svg>
-                      <h4>Tareas Vencidas ({analisisTiempo.vencidas.length})</h4>
-                    </div>
-                    <div className="alert-tasks">
-                      {analisisTiempo.vencidas.slice(0, 3).map((tarea, index) => (
-                        <div key={index} className="alert-task">
-                          <span className="task-title">{tarea.titulo}</span>
-                          <span className={`task-priority ${tarea.prioridad.toLowerCase()}`}>
-                            {tarea.prioridad}
-                          </span>
-                        </div>
-                      ))}
-                      {analisisTiempo.vencidas.length > 3 && (
-                        <p className="more-tasks">Y {analisisTiempo.vencidas.length - 3} más...</p>
-                      )}
-                    </div>
+                  <div className="metric-content">
+                    <h4>Tareas Vencidas</h4>
+                    <p className="metric-value">{analisisTiempo.vencidas.length}</p>
+                    <p className="metric-label">Requieren atención inmediata</p>
                   </div>
-                )}
+                </div>
 
-                {analisisTiempo.proximas.length > 0 && (
-                  <div className="alert-box proximas">
-                    <div className="alert-header">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clipRule="evenodd" />
-                      </svg>
-                      <h4>Próximas a Vencer ({analisisTiempo.proximas.length})</h4>
-                    </div>
-                    <div className="alert-tasks">
-                      {analisisTiempo.proximas.slice(0, 3).map((tarea, index) => (
-                        <div key={index} className="alert-task">
-                          <span className="task-title">{tarea.titulo}</span>
-                          <span className="task-date">{tarea.fechaLimite}</span>
-                        </div>
-                      ))}
-                      {analisisTiempo.proximas.length > 3 && (
-                        <p className="more-tasks">Y {analisisTiempo.proximas.length - 3} más...</p>
-                      )}
-                    </div>
+                <div className="time-metric-card proximas">
+                  <div className="metric-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                      <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clipRule="evenodd" />
+                    </svg>
                   </div>
-                )}
+                  <div className="metric-content">
+                    <h4>Próximas a Vencer</h4>
+                    <p className="metric-value">{analisisTiempo.proximas.length}</p>
+                    <p className="metric-label">En los próximos 7 días</p>
+                  </div>
+                </div>
 
-                {analisisTiempo.vencidas.length === 0 && analisisTiempo.proximas.length === 0 && (
-                  <div className="alert-box success">
+                <div className="time-metric-card cumplimiento">
+                  <div className="metric-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                       <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
                     </svg>
-                    <h4>¡Todo bajo control!</h4>
-                    <p>No hay tareas vencidas ni próximas a vencer</p>
                   </div>
-                )}
+                  <div className="metric-content">
+                    <h4>Tasa de Cumplimiento</h4>
+                    <p className="metric-value">{analisisTiempo.tasaCumplimiento}%</p>
+                    <p className="metric-label">Completadas a tiempo</p>
+                  </div>
+                </div>
               </div>
 
-              <div className="productivity-insights">
-                <div className="insight-card">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                    <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clipRule="evenodd" />
-                  </svg>
-                  <div>
-                    <h4>Velocidad del Equipo</h4>
-                    <p>{tareasCompletadas} tareas completadas</p>
-                  </div>
+              {/* Gráfico de Progreso Semanal */}
+              <div className="weekly-progress-chart">
+                <h3 className="chart-title">Progreso Semanal</h3>
+                <div className="bar-chart">
+                  {analisisTiempo.progresoSemanal.map((dia, index) => {
+                    const maxCompletadas = Math.max(...analisisTiempo.progresoSemanal.map(d => d.completadas));
+                    const altura = (dia.completadas / maxCompletadas) * 100;
+                    return (
+                      <div key={index} className="bar-item">
+                        <div className="bar-wrapper">
+                          <div 
+                            className="bar-fill" 
+                            style={{ height: `${altura}%` }}
+                            title={`${dia.completadas} tareas`}
+                          >
+                            <span className="bar-value">{dia.completadas}</span>
+                          </div>
+                        </div>
+                        <span className="bar-label">{dia.dia}</span>
+                      </div>
+                    );
+                  })}
                 </div>
-                <div className="insight-card">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                    <path fillRule="evenodd" d="M2.25 13.5a8.25 8.25 0 018.25-8.25.75.75 0 01.75.75v6.75H18a.75.75 0 01.75.75 8.25 8.25 0 01-16.5 0z" clipRule="evenodd" />
-                    <path fillRule="evenodd" d="M12.75 3a.75.75 0 01.75-.75 8.25 8.25 0 018.25 8.25.75.75 0 01-.75.75h-7.5a.75.75 0 01-.75-.75V3z" clipRule="evenodd" />
-                  </svg>
-                  <div>
-                    <h4>Eficiencia</h4>
-                    <p>{porcentajeCompletado}% de avance total</p>
+              </div>
+
+              {/* Completación por Prioridad */}
+              <div className="priority-time-chart">
+                <h3 className="chart-title">Tareas Completadas por Prioridad</h3>
+                <div className="priority-bars">
+                  <div className="priority-bar-item">
+                    <div className="priority-bar-header">
+                      <span className="priority-label alta">Alta</span>
+                      <span className="priority-count">{analisisTiempo.tiempoPorPrioridad.Alta}</span>
+                    </div>
+                    <div className="priority-bar-track">
+                      <div 
+                        className="priority-bar-fill alta"
+                        style={{ 
+                          width: `${tareasCompletadas > 0 ? (analisisTiempo.tiempoPorPrioridad.Alta / tareasCompletadas) * 100 : 0}%` 
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  <div className="priority-bar-item">
+                    <div className="priority-bar-header">
+                      <span className="priority-label media">Media</span>
+                      <span className="priority-count">{analisisTiempo.tiempoPorPrioridad.Media}</span>
+                    </div>
+                    <div className="priority-bar-track">
+                      <div 
+                        className="priority-bar-fill media"
+                        style={{ 
+                          width: `${tareasCompletadas > 0 ? (analisisTiempo.tiempoPorPrioridad.Media / tareasCompletadas) * 100 : 0}%` 
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  <div className="priority-bar-item">
+                    <div className="priority-bar-header">
+                      <span className="priority-label baja">Baja</span>
+                      <span className="priority-count">{analisisTiempo.tiempoPorPrioridad.Baja}</span>
+                    </div>
+                    <div className="priority-bar-track">
+                      <div 
+                        className="priority-bar-fill baja"
+                        style={{ 
+                          width: `${tareasCompletadas > 0 ? (analisisTiempo.tiempoPorPrioridad.Baja / tareasCompletadas) * 100 : 0}%` 
+                        }}
+                      ></div>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              {/* Alertas de Tiempo */}
+              {(analisisTiempo.vencidas.length > 0 || analisisTiempo.proximas.length > 0) && (
+                <div className="time-alerts-section">
+                  <h3 className="chart-title">Alertas de Tiempo</h3>
+                  
+                  {analisisTiempo.vencidas.length > 0 && (
+                    <div className="alert-box vencidas">
+                      <div className="alert-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                          <path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" />
+                        </svg>
+                        <h4>Tareas Vencidas ({analisisTiempo.vencidas.length})</h4>
+                      </div>
+                      <div className="alert-tasks">
+                        {analisisTiempo.vencidas.slice(0, 5).map((tarea, index) => (
+                          <div key={index} className="alert-task">
+                            <span className="task-title">{tarea.titulo}</span>
+                            <div className="task-meta">
+                              <span className={`task-priority ${tarea.prioridad.toLowerCase()}`}>{tarea.prioridad}</span>
+                              <span className="task-date">{tarea.fechaLimite}</span>
+                            </div>
+                          </div>
+                        ))}
+                        {analisisTiempo.vencidas.length > 5 && (
+                          <p className="more-tasks">Y {analisisTiempo.vencidas.length - 5} más...</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {analisisTiempo.proximas.length > 0 && (
+                    <div className="alert-box proximas">
+                      <div className="alert-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                          <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clipRule="evenodd" />
+                        </svg>
+                        <h4>Próximas a Vencer ({analisisTiempo.proximas.length})</h4>
+                      </div>
+                      <div className="alert-tasks">
+                        {analisisTiempo.proximas.slice(0, 5).map((tarea, index) => (
+                          <div key={index} className="alert-task">
+                            <span className="task-title">{tarea.titulo}</span>
+                            <span className="task-date">{tarea.fechaLimite}</span>
+                          </div>
+                        ))}
+                        {analisisTiempo.proximas.length > 5 && (
+                          <p className="more-tasks">Y {analisisTiempo.proximas.length - 5} más...</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {analisisTiempo.vencidas.length === 0 && analisisTiempo.proximas.length === 0 && (
+                <div className="alert-box success">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75 9.75s9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
+                  </svg>
+                  <h4>¡Todo bajo control!</h4>
+                  <p>No hay tareas vencidas ni próximas a vencer</p>
+                </div>
+              )}
             </div>
           )}
         </div>

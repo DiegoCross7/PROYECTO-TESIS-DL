@@ -1018,3 +1018,288 @@ ANALYTICS MODAL - ESTILOS
     padding: 1rem;
   }
 }
+
+/* ============================================
+   TIEMPO - NUEVOS ESTILOS
+   ============================================ */
+
+/* Time Metrics Grid */
+.time-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.time-metric-card {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 2px solid;
+  display: flex;
+  gap: 1rem;
+  transition: all 0.3s ease;
+}
+
+.time-metric-card.vencidas {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(220, 38, 38, 0.02));
+}
+
+.time-metric-card.proximas {
+  border-color: rgba(245, 158, 11, 0.3);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), rgba(217, 119, 6, 0.02));
+}
+
+.time-metric-card.cumplimiento {
+  border-color: rgba(16, 185, 129, 0.3);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(5, 150, 105, 0.02));
+}
+
+.time-metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.time-metric-card .metric-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.time-metric-card.vencidas .metric-icon {
+  background: linear-gradient(135deg, #EF4444, #DC2626);
+}
+
+.time-metric-card.proximas .metric-icon {
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+}
+
+.time-metric-card.cumplimiento .metric-icon {
+  background: linear-gradient(135deg, #10B981, #059669);
+}
+
+.time-metric-card .metric-icon svg {
+  width: 28px;
+  height: 28px;
+  color: white;
+}
+
+.time-metric-card .metric-content {
+  flex: 1;
+}
+
+.time-metric-card .metric-content h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.85rem;
+  color: #6B7280;
+  font-weight: 600;
+}
+
+.time-metric-card .metric-value {
+  margin: 0 0 0.25rem 0;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.time-metric-card.vencidas .metric-value {
+  background: linear-gradient(135deg, #EF4444, #DC2626);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.time-metric-card.proximas .metric-value {
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.time-metric-card.cumplimiento .metric-value {
+  background: linear-gradient(135deg, #10B981, #059669);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.time-metric-card .metric-label {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #9CA3AF;
+}
+
+/* Weekly Progress Chart */
+.weekly-progress-chart {
+  background: linear-gradient(135deg, #f8f9fa, #ffffff);
+  border: 2px solid #E5E7EB;
+  border-radius: 16px;
+  padding: 2rem;
+}
+
+.bar-chart {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 250px;
+  gap: 1rem;
+}
+
+.bar-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bar-wrapper {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.bar-fill {
+  width: 100%;
+  background: linear-gradient(180deg, #d43371, #9333EA);
+  border-radius: 8px 8px 0 0;
+  transition: height 0.6s ease;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 0.5rem;
+  position: relative;
+}
+
+.bar-value {
+  color: white;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.bar-label {
+  font-size: 0.85rem;
+  color: #6B7280;
+  font-weight: 600;
+}
+
+/* Priority Time Chart */
+.priority-time-chart {
+  background: linear-gradient(135deg, #f8f9fa, #ffffff);
+  border: 2px solid #E5E7EB;
+  border-radius: 16px;
+  padding: 2rem;
+}
+
+.priority-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.priority-bar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.priority-bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.priority-bar-header .priority-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.priority-bar-header .priority-label.alta {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+.priority-bar-header .priority-label.media {
+  background: #FEF3C7;
+  color: #D97706;
+}
+
+.priority-bar-header .priority-label.baja {
+  background: #D1FAE5;
+  color: #059669;
+}
+
+.priority-bar-header .priority-count {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.priority-bar-track {
+  width: 100%;
+  height: 40px;
+  background: #F3F4F6;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.priority-bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.6s ease;
+}
+
+.priority-bar-fill.alta {
+  background: linear-gradient(90deg, #EF4444, #DC2626);
+}
+
+.priority-bar-fill.media {
+  background: linear-gradient(90deg, #F59E0B, #D97706);
+}
+
+.priority-bar-fill.baja {
+  background: linear-gradient(90deg, #10B981, #059669);
+}
+
+/* Time Alerts Section */
+.time-alerts-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.alert-task .task-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Responsive para Tiempo */
+@media (max-width: 1024px) {
+  .time-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .bar-chart {
+    height: 200px;
+  }
+
+  .bar-wrapper {
+    height: 150px;
+  }
+}
