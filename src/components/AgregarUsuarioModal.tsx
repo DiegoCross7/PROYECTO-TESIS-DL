@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './AgregarUsuarioModal.css';
+import { useNotificaciones } from '../hooks/useNotificaciones';
 
 interface NuevoUsuario {
   nombre: string;
@@ -26,6 +27,8 @@ interface AgregarUsuarioModalProps {
  * - Diseño profesional
  */
 export default function AgregarUsuarioModal({ onClose, onAdd }: AgregarUsuarioModalProps) {
+  const { warning } = useNotificaciones();
+  
   const [formData, setFormData] = useState<NuevoUsuario>({
     nombre: '',
     correo: '',
@@ -129,7 +132,7 @@ export default function AgregarUsuarioModal({ onClose, onAdd }: AgregarUsuarioMo
       };
       reader.readAsDataURL(file);
     } else if (file) {
-      alert('Por favor selecciona un archivo de imagen válido');
+      warning('Por favor selecciona un archivo de imagen válido');
     }
   };
 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './EditarUsuarioModal.css';
+import { useNotificaciones } from '../hooks/useNotificaciones';
 
 interface Usuario {
   id: number;
@@ -30,6 +31,8 @@ interface EditarUsuarioModalProps {
  * - Diseño profesional inspirado en la imagen
  */
 export default function EditarUsuarioModal({ usuario, onClose, onSave }: EditarUsuarioModalProps) {
+  const { warning } = useNotificaciones();
+  
   const [formData, setFormData] = useState({
     nombre: usuario.nombre,
     correo: usuario.email,
@@ -122,7 +125,7 @@ export default function EditarUsuarioModal({ usuario, onClose, onSave }: EditarU
       };
       reader.readAsDataURL(file);
     } else if (file) {
-      alert('Por favor selecciona un archivo de imagen válido');
+      warning('Por favor selecciona un archivo de imagen válido');
     }
   };
 
