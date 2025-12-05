@@ -4,6 +4,8 @@ import EditarUsuarioModal from '../components/EditarUsuarioModal';
 import AgregarUsuarioModal from '../components/AgregarUsuarioModal';
 import { NotificacionesContainer } from '../components/Notificacion';
 import { useNotificaciones } from '../hooks/useNotificaciones';
+import { useLocalStorage } from '../hooks/useLocalStorage';
+import { USUARIOS_INICIALES } from '../data/datosIniciales';
 
 interface Usuario {
   id: number;
@@ -39,111 +41,11 @@ export default function Usuarios() {
   const usuariosPorPagina = 8;
 
   // ============================================
-  // DATOS FICTICIOS (TODO: Conectar con Backend)
+  // PERSISTENCIA CON LOCALSTORAGE
   // ============================================
   
-  // Lista de usuarios (TODO: Obtener del backend via API GET /api/usuarios)
-  const [usuarios, setUsuarios] = useState<Usuario[]>([
-    {
-      id: 0,
-      nombre: "Diego Gabriel",
-      email: "diegogabrielcentenpfalcon7@gmail.com",
-      fechaCreacion: "01/01/2025",
-      estado: "Activo",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Diego",
-      rol: "Desarrollador RPA"
-    },
-    {
-      id: 1,
-      nombre: "Jane Cooper",
-      email: "jane@microsoft.com",
-      fechaCreacion: "25/05/2025",
-      estado: "Activo",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jane",
-      rol: "Project Manager"
-    },
-    {
-      id: 2,
-      nombre: "Floyd Miles",
-      email: "floyd@yahoo.com",
-      fechaCreacion: "12/05/2025",
-      estado: "Inactivo",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Floyd",
-      rol: "Desarrollador RPA"
-    },
-    {
-      id: 3,
-      nombre: "Ronald Richards",
-      email: "ronald@adobe.com",
-      fechaCreacion: "20/03/2025",
-      estado: "Inactivo",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ronald",
-      rol: "QA Tester"
-    },
-    {
-      id: 4,
-      nombre: "Marvin McKinney",
-      email: "marvin@tesla.com",
-      fechaCreacion: "02/08/2025",
-      estado: "Activo",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Marvin",
-      rol: "Full Stack Developer"
-    },
-    {
-      id: 5,
-      nombre: "Jerome Bell",
-      email: "jerome@google.com",
-      fechaCreacion: "05/09/2025",
-      estado: "Activo",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jerome",
-      rol: "Business Analyst"
-    },
-    {
-      id: 6,
-      nombre: "Kathryn Murphy",
-      email: "kathryn@microsoft.com",
-      fechaCreacion: "13/01/2025",
-      estado: "Activo",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Kathryn",
-      rol: "Scrum Master"
-    },
-    {
-      id: 7,
-      nombre: "Jacob Jones",
-      email: "jacob@yahoo.com",
-      fechaCreacion: "22/02/2025",
-      estado: "Activo",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jacob",
-      rol: "DevOps Engineer"
-    },
-    {
-      id: 8,
-      nombre: "Kristin Watson",
-      email: "kristin@facebook.com",
-      fechaCreacion: "17/04/2025",
-      estado: "Inactivo",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Kristin",
-      rol: "Frontend Developer"
-    },
-    {
-      id: 9,
-      nombre: "Courtney Henry",
-      email: "courtney@apple.com",
-      fechaCreacion: "28/06/2025",
-      estado: "Activo",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Courtney",
-      rol: "Backend Developer"
-    },
-    {
-      id: 10,
-      nombre: "Theresa Webb",
-      email: "theresa@amazon.com",
-      fechaCreacion: "15/07/2025",
-      estado: "Activo",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Theresa",
-      rol: "QA Tester"
-    }
-  ]);
+  // Lista de usuarios con persistencia automática
+  const [usuarios, setUsuarios] = useLocalStorage<Usuario[]>('usuarios', USUARIOS_INICIALES);
 
   // ============================================
   // FUNCIONES DEL COMPONENTE

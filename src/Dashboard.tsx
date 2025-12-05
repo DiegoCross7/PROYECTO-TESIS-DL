@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import Spline from '@splinetool/react-spline';
 import './Dashboard.css';
+import { useLocalStorage } from './hooks/useLocalStorage';
+import { USUARIO_PRINCIPAL } from './data/datosIniciales';
 
 // Componentes de Layout
 import Header from './components/Layout/Header.tsx';
@@ -53,18 +55,11 @@ export default function Dashboard({ onCerrarSesion }: DashboardProps) {
   const [proyectoSeleccionadoId, setProyectoSeleccionadoId] = useState<number | null>(null);
 
   // ============================================
-  // DATOS FICTICIOS (TODO: Conectar con Backend)
+  // PERSISTENCIA CON LOCALSTORAGE
   // ============================================
   
-  // Estado del usuario - ahora actualizable
-  const [usuario, setUsuario] = useState({
-    nombre: "Diego Gabriel",
-    rol: "Desarrollador RPA",
-    email: "diegogabrielcentenpfalcon7@gmail.com",
-    telefono: "+51 946595031",
-    estado: "Activo",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Diego"
-  });
+  // Estado del usuario principal con persistencia automática
+  const [usuario, setUsuario] = useLocalStorage('usuarioPrincipal', USUARIO_PRINCIPAL);
 
   // ============================================
   // FUNCIONES DEL COMPONENTE

@@ -110,7 +110,6 @@ export default function Inicio() {
     const totalEnProgreso = proyectos.filter(p => p.estado === 'En Progreso').reduce((sum, p) => sum + (p.tareas - p.tareasCompletadas), 0);
     
     // Tareas completadas
-    const tareasCompletadas = totalCompletadas;
     const porcentajeCompletadas = totalTareas > 0 ? (totalCompletadas / totalTareas) * 100 : 0;
 
     // Tareas en progreso
